@@ -5,6 +5,7 @@ import java.util.List;
 import dao.TeamDAO;
 import db.DBConnection;
 import dao.StadiumDAO;
+import dto.TeamRespDTO;
 import model.Stadium;
 
 public class BaseBallApp {
@@ -14,7 +15,9 @@ public class BaseBallApp {
 		TeamDAO teamDAO = new TeamDAO(connection);
 
 		try {
-			teamDAO.createTeam(1, 1, "삼성");
+			List<TeamRespDTO> teamRespDTOList = teamDAO.getTeamList();
+			teamDAO.printTeamList(teamRespDTOList);
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
