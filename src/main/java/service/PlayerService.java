@@ -1,6 +1,7 @@
 package service;
 
 import java.sql.Connection;
+import java.util.List;
 
 import constant.Position;
 import dao.PlayerDao;
@@ -26,5 +27,11 @@ public class PlayerService {
 		Player player = playerDao.getPlayerById(id);
 
 		return player;
+	}
+
+	public List<Player> getPlayersByTeam(int teamId) {
+		List<Player> playerList = playerDao.getPlayersByTeam(teamId);
+
+		return playerList;
 	}
 }

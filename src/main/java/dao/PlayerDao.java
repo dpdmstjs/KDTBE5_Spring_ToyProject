@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import constant.Position;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,25 @@ public class PlayerDao {
 		}
 
 		return null;
+	}
+
+	public List<Player> getPlayersByTeam(int teamId) {
+		List<Player> playerList = new ArrayList<>();
+
+		String sql = "select * from player where team_id = ?";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, teamId);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					Player player = buildPlayerFromResultSet(resultSet);
+					playerList.add(player);
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+
+		return playerList;
 	}
 
 	public Player getPlayerById(int id) {
