@@ -1,9 +1,11 @@
 package service;
 
 import java.sql.Connection;
+import java.util.List;
 
 import dao.OutPlayerDao;
 import dao.PlayerDao;
+import dto.OutPlayerRespDto;
 
 public class OutPlayerService {
 	private PlayerDao playerDao;
@@ -18,5 +20,11 @@ public class OutPlayerService {
 			return "성공";
 
 		return "실패";
+	}
+
+	public List<OutPlayerRespDto> getOutPlayerList() {
+		List<OutPlayerRespDto> outPlayerList = outPlayerDao.getOutPlayers();
+
+		return outPlayerList;
 	}
 }
