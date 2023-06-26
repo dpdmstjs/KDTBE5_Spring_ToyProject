@@ -8,31 +8,31 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
+
+import lombok.RequiredArgsConstructor;
 import model.Stadium;
 
-@Getter
+@RequiredArgsConstructor
 public class StadiumDAO {
-	private Connection connection;
 
-	public StadiumDAO(Connection connection) {
-		this.connection = connection;
-	}
+	private final Connection connection;
 
-	public Stadium createStadium(int id, String name) throws SQLException {
+	public int createStadium(int id, String name) {
 		String query = "INSERT INTO stadium(id, name, created_at) VALUES (?, ?, now())";
+
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setInt(1, id);
 			statement.setString(2, name);
+
 			int rowCount = statement.executeUpdate();
-			if (rowCount > 0) {
-				return getStadiumById(id);
-			}
+
+			return rowCount;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
-	public Stadium getStadiumById(int id) throws SQLException {
+	public Stadium selectStadiumById(int id) {
 		String query = "SELECT * FROM stadium WHERE id = ?";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setInt(1, id);
@@ -41,20 +41,24 @@ public class StadiumDAO {
 					return buildStadiumFromResultSet(resultSet);
 				}
 			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 		return null;
 	}
 
-	public List<Stadium> getStadiumList() throws SQLException {
+	public List<Stadium> selectStadiumList() {
 		List<Stadium> stadiumList = new ArrayList<>();
 		String query = "SELECT * FROM stadium";
 		try (Statement statement = connection.createStatement()) {
-			try(ResultSet resultSet = statement.executeQuery(query)){
+			try (ResultSet resultSet = statement.executeQuery(query)) {
 				while (resultSet.next()) {
 					Stadium stadium = buildStadiumFromResultSet(resultSet);
 					stadiumList.add(stadium);
 				}
 			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 		return stadiumList;
 	}
@@ -70,4 +74,8 @@ public class StadiumDAO {
 			.createdAt(createdAt)
 			.build();
 	}
+
 }
+
+
+
