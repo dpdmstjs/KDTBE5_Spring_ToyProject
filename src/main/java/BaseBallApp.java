@@ -14,13 +14,7 @@ public class BaseBallApp {
 		StadiumDAO stadiumDAO = new StadiumDAO(connection);
 		TeamDAO teamDAO = new TeamDAO(connection);
 
-		try {
-			List<TeamRespDTO> teamRespDTOList = teamDAO.getTeamList();
-			teamDAO.printTeamList(teamRespDTOList);
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 
 	}
 }
