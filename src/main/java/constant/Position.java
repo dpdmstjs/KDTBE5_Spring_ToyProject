@@ -12,4 +12,14 @@ public enum Position {
 
 	private String name;
 
+	public static Position findByName(String name) {
+		for (Position positon : Position.values()) {
+			if (!positon.getName().equals(name))
+				continue;
+
+			return positon;
+		}
+
+		return null;
+	}
 }
