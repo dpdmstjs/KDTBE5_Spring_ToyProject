@@ -58,6 +58,20 @@ public class PlayerDao {
 		return playerList;
 	}
 
+	public int updateTeamId(int id, int teamId) {
+		String sql = "update player set team_id = ? where id = ?";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, id);
+			statement.setInt(2, teamId);
+
+			int rowCount = statement.executeUpdate();
+
+			return rowCount;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public Player getPlayerById(int id) {
 		String sql = "select * from player where id = ?";
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
