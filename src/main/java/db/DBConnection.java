@@ -8,7 +8,7 @@ public class DBConnection {
 	public static Connection getInstance() {
 		String url = "jdbc:mysql://localhost:3306/baseball";
 		String userName = "root";
-		String passWord = "root1234";
+		String passWord = "root";
 
 		//@TODO: exception 적용필요
 		try {
@@ -18,7 +18,6 @@ public class DBConnection {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-
 		return null;
 	}
 }
