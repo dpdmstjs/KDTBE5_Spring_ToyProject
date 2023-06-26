@@ -17,10 +17,13 @@ public class PlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public Player createPlayer(int teamId, String name, Position positon) {
-		Player player = playerDao.createPlayer(teamId, name, positon);
+	public String createPlayer(int teamId, String name, Position positon) {
+		int result = playerDao.createPlayer(teamId, name, positon);
 
-		return player;
+		if (result > 0)
+			return "성공";
+
+		return "실패";
 	}
 
 	public Player getPlayer(int id) {

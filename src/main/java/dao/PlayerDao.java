@@ -17,7 +17,7 @@ import model.Player;
 public class PlayerDao {
 	private final Connection connection;
 
-	public Player createPlayer(int teamId, String name, Position position) {
+	public int createPlayer(int teamId, String name, Position position) {
 		String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
 
 		try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -27,16 +27,10 @@ public class PlayerDao {
 
 			int rowCount = statement.executeUpdate();
 
-			if (rowCount > 0) {
-				ResultSet resultSet = statement.getGeneratedKeys();
-				resultSet.next();
-				return getPlayerById(resultSet.getInt(1));
-			}
+			return rowCount;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-
-		return null;
 	}
 
 	public List<Player> getPlayersByTeam(int teamId) {
