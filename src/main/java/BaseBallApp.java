@@ -1,7 +1,10 @@
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
+
 import db.DBConnection;
 import dao.StadiumDAO;
+import model.Stadium;
 
 public class BaseBallApp {
 	public static void main(String[] args) {
@@ -9,7 +12,8 @@ public class BaseBallApp {
 		StadiumDAO stadiumDAO = new StadiumDAO(connection);
 
 		try {
-			stadiumDAO.createStadium(1, "잠실야구장");
+			List<Stadium> stadiumList = stadiumDAO.getStadiumList();
+			System.out.println(stadiumList);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
