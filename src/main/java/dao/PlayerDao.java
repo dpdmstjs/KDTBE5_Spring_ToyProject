@@ -33,7 +33,7 @@ public class PlayerDao {
 		}
 	}
 
-	public List<Player> getPlayersByTeam(int teamId) {
+	public List<Player> selectPlayersByTeam(int teamId) {
 		List<Player> playerList = new ArrayList<>();
 
 		String sql = "select * from player where team_id = ?";
@@ -66,7 +66,7 @@ public class PlayerDao {
 		}
 	}
 
-	public Player getPlayerById(int id) {
+	public Player selectPlayerById(int id) {
 		String sql = "select * from player where id = ?";
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			statement.setInt(1, id);

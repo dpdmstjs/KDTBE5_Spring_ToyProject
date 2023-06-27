@@ -32,11 +32,11 @@ public class OutPlayerDao {
 		}
 	}
 
-	public List<OutPlayerRespDto> getOutPlayers() {
+	public List<OutPlayerRespDto> selectOutPlayers() {
 		List<OutPlayerRespDto> outPlayerList = new ArrayList<>();
 
 		String sql = "select p.id, p.name, p.position, o.reason, o.created_at" +
-			"from out_player o left outer join player p on o.player_id = p.id";
+			" from out_player o left outer join player p on o.player_id = p.id";
 
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			try (ResultSet resultSet = statement.executeQuery()) {
