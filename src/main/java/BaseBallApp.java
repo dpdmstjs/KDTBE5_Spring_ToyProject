@@ -66,6 +66,11 @@ public class BaseBallApp {
 						method.setAccessible(true);
 
 						try {
+							if (method.getParameterTypes().length == 0) {
+								method.invoke(instance);
+								break;
+							}
+
 							Class<?>[] parameterTypes = method.getParameterTypes();
 							Object[] arg = new Object[parameterTypes.length];
 							for (int i = 0; i < parameterTypes.length; i++) {

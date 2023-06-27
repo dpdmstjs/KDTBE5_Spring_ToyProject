@@ -14,9 +14,17 @@ public class MyScanner {
 	}
 
 	public MethodInfo parseData(String request) {
+		MethodInfo methodInfo = new MethodInfo();
 		List<Object> params = new ArrayList<>();
 
+		if (!request.contains("?")) {
+			methodInfo.setName(request);
+			return methodInfo;
+		}
+
 		String[] methodArray = request.split("\\?");
+
+		methodInfo.setName(methodArray[0]);
 
 		String[] paramArray = methodArray[1].split("&");
 
@@ -24,7 +32,7 @@ public class MyScanner {
 			params.add(param.split("=")[1]);
 		}
 
-		MethodInfo methodInfo = new MethodInfo(methodArray[0], params.toArray());
+		methodInfo.setParameters(params.toArray());
 
 		return methodInfo;
 	}
