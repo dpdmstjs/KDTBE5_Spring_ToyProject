@@ -7,34 +7,47 @@ import constant.Position;
 import dao.PlayerDao;
 import db.DBConnection;
 import model.Player;
+import util.annotation.RequestMapping;
+import util.annotation.Service;
 
+@Service
 public class PlayerService {
 	private PlayerDao playerDao;
 	private Connection connection;
+
+	public PlayerService() {
+		this.playerDao = new PlayerDao(DBConnection.getInstance());
+		this.connection = DBConnection.getInstance();
+	}
 
 	public PlayerService(PlayerDao playerDao) {
 		this.playerDao = playerDao;
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String createPlayer(int teamId, String name, Position positon) {
-		int result = playerDao.createPlayer(teamId, name, positon);
+	@RequestMapping(name = "선수등록")
+	public void createPlayer(Integer teamId, String name, String position) {
+		int result = playerDao.createPlayer(teamId, name, Position.findByName(position));
 
-		if (result > 0)
-			return "성공";
+		if (result > 0) {
+			System.out.println("성공");
+			return;
+		}
 
-		return "실패";
+		System.out.println("실패");
 	}
 
-	public Player getPlayer(int id) {
-		Player player = playerDao.getPlayerById(id);
+	@RequestMapping(name = "선수조회")
+	public void getPlayer(int id) {
+		Player player = playerDao.selectPlayerById(id);
 
-		return player;
+		System.out.println(player);
 	}
 
-	public List<Player> getPlayersByTeam(int teamId) {
-		List<Player> playerList = playerDao.getPlayersByTeam(teamId);
+	@RequestMapping(name = "선수목록")
+	public void getPlayersByTeam(int teamId) {
+		List<Player> playerList = playerDao.selectPlayersByTeam(teamId);
 
-		return playerList;
+		System.out.println(playerList.toString());
 	}
 }
