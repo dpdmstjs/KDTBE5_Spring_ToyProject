@@ -12,11 +12,12 @@ import java.util.Map;
 import constant.Position;
 import dto.PositionRespDto;
 import lombok.RequiredArgsConstructor;
+
 @RequiredArgsConstructor
 public class PositionDao {
 	private final Connection connection;
 
-	public Map<String, List<String>> positionList() {
+	public PositionRespDto positionList() {
 		List<String> teamList = getTeamNameList();
 		Map<String, List<String>> positionMap = new HashMap<>();
 
@@ -55,14 +56,15 @@ public class PositionDao {
 						String teamName = resultSet.getString(team);
 						teamPlayerList.add(teamName);
 					}
-
 					positionMap.put(position, teamPlayerList);
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return positionMap;
+		return PositionRespDto.builder()
+			.positionMap(positionMap)
+			.build();
 	}
 
 	public List<String> getTeamNameList() {
