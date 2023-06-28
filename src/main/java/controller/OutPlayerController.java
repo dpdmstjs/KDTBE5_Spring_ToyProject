@@ -1,8 +1,12 @@
 package controller;
 
+import java.sql.SQLException;
+
 import service.OutPlayerService;
+import util.annotation.Controller;
 import util.annotation.RequestMapping;
 
+@Controller
 public class OutPlayerController {
 	private OutPlayerService outPlayerService;
 
@@ -16,7 +20,7 @@ public class OutPlayerController {
 	}
 
 	@RequestMapping(name = "퇴출등록")
-	public String createOutPlayer(int playerId, String reason) {
+	public String createOutPlayer(int playerId, String reason) throws SQLException {
 		return outPlayerService.createOutPlayer(playerId, reason);
 	}
 }
