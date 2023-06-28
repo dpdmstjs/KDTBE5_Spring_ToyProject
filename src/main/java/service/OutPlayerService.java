@@ -1,6 +1,7 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import dao.OutPlayerDao;
@@ -25,14 +26,17 @@ public class OutPlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String createOutPlayer(int playerId, String reason) {
+	public String createOutPlayer(int playerId, String reason) throws SQLException {
+		connection.setAutoCommit(false);
 		int outPlayerResult = outPlayerDao.createOutPlayer(playerId, reason);
 		int playerResult = playerDao.updateTeamId(playerId, 0);
 
 		if (outPlayerResult == 1 && playerResult == 1) {
+			connection.commit();
 			return "성공";
 		}
 
+		connection.rollback();
 		return "실패";
 	}
 
