@@ -7,10 +7,7 @@ import constant.Position;
 import dao.PlayerDao;
 import db.DBConnection;
 import model.Player;
-import util.annotation.RequestMapping;
-import util.annotation.Controller;
 
-@Controller
 public class PlayerService {
 	private PlayerDao playerDao;
 	private Connection connection;
@@ -25,7 +22,6 @@ public class PlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	@RequestMapping(name = "선수등록")
 	public String createPlayer(Integer teamId, String name, String position) {
 		int result = playerDao.createPlayer(teamId, name, Position.findByName(position));
 
@@ -42,7 +38,6 @@ public class PlayerService {
 		System.out.println(player);
 	}
 
-	@RequestMapping(name = "선수목록")
 	public String getPlayersByTeam(int teamId) {
 		List<Player> playerList = playerDao.selectPlayersByTeam(teamId);
 
