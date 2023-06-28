@@ -22,8 +22,8 @@ public class PlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String createPlayer(Integer teamId, String name, String position) {
-		int result = playerDao.createPlayer(teamId, name, Position.findByName(position));
+	public String createPlayer(Integer teamId, String name, Position position) {
+		int result = playerDao.createPlayer(teamId, name, position);
 
 		if (result > 0) {
 			return "성공";
