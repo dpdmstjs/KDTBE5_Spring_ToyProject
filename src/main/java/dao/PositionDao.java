@@ -53,7 +53,7 @@ public class PositionDao {
 					List<String> teamPlayerList = new ArrayList<>();
 
 					for (String team : teamList) {
-						String teamName = resultSet.getString(team);
+						String teamName = resultSet.getString(team); // Update this line
 						teamPlayerList.add(teamName);
 					}
 					positionMap.put(position, teamPlayerList);
@@ -64,6 +64,7 @@ public class PositionDao {
 		}
 		return PositionRespDto.builder()
 			.positionMap(positionMap)
+			.teamList(teamList)
 			.build();
 	}
 
