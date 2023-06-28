@@ -5,11 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import constant.Position;
 import dto.PositionRespDto;
 import lombok.RequiredArgsConstructor;
 
@@ -75,7 +75,16 @@ public class PositionDao {
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
 					teamList.add(resultSet.getString("name"));
-          
+				}
+			} catch (SQLException e) {
+
+			}
+		} catch (Exception e) {
+
+		}
+		return teamList;
+	}
+
 	public List<PositionRespDto> getPositionInfo() throws SQLException {
 		List<PositionRespDto> positionList = new ArrayList<>();
 
@@ -99,15 +108,14 @@ public class PositionDao {
 				while (resultSet2.next()) {
 					String teamPlayers = resultSet2.getString(2);
 					List<String> teamPlayerList = Arrays.asList(teamPlayers.split(","));
-					PositionRespDto positionDto = PositionRespDto.builder()
-						.position(Position.findByName(resultSet2.getString("position")))
-						.teamPlayers(teamPlayerList)
-						.build();
-					positionList.add(positionDto);
+					// PositionRespDto positionDto = PositionRespDto.builder()
+					// 	.position(Position.findByName(resultSet2.getString("position")))
+					// 	.teamPlayers(teamPlayerList)
+					// 	.build();
+					// positionList.add(positionDto);
 				}
 			}
 			return positionList;
 		}
-		return teamList;
 	}
 }
