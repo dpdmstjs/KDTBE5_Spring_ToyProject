@@ -4,56 +4,80 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import constant.Position;
 import dto.PositionRespDto;
 import lombok.RequiredArgsConstructor;
-
 @RequiredArgsConstructor
 public class PositionDao {
-
 	private final Connection connection;
-	public List<PositionRespDto> getPositionInfo() {
-		List<PositionRespDto> positionList = new ArrayList<>();
 
-		String query = "SET @sql = NULL; "
-			+ "SELECT GROUP_CONCAT(DISTINCT "
-			+ "           CONCAT("
-			+ "             'GROUP_CONCAT(CASE WHEN t.name = ''', "
-			+ "             t.name, "
-			+ "             ''' THEN p.name ELSE NULL END) AS `', "
-			+ "             t.name, "
-			+ "             '`' "
-			+ "           ) SEPARATOR ',') INTO @sql "
-			+ "FROM player p "
-			+ "JOIN team t ON p.team_id = t.id; "
-			+ "SET @sql = CONCAT('SELECT p.position, ', @sql, ' FROM player p JOIN team t ON p.team_id = t.id GROUP BY p.position'); "
-			+ "PREPARE stmt FROM @sql; "
-			+ "EXECUTE stmt; "
-			+ "DEALLOCATE PREPARE stmt";
+	public Map<String, List<String>> positionList() {
+		List<String> teamList = getTeamNameList();
+		Map<String, List<String>> positionMap = new HashMap<>();
 
-		try (PreparedStatement statement = connection.prepareStatement(query)) {
-			boolean hasResultSet = statement.execute();
-			if (hasResultSet) {
-				try (ResultSet resultSet = statement.getResultSet()) {
-					while (resultSet.next()) {
-						String teamPlayers = resultSet.getString(2);
-						List<String> teamPlayerList = Arrays.asList(teamPlayers.split(","));
-						PositionRespDto positionDto = PositionRespDto.builder()
-							.position(Position.findByName(resultSet.getString("position")))
-							.teamPlayers(teamPlayerList)
-							.build();
-						positionList.add(positionDto);
+		try {
+			StringBuilder builder = new StringBuilder();
+			builder.append("SELECT a.position, ");
+
+			// 팀이름으로 각각 대체
+			for (String team : teamList) {
+				builder.append("MAX(IF(a.team_name = ?, a.player_name, '-')) as ");
+				builder.append(team);
+				builder.append(", ");
+			}
+
+			builder.delete(builder.length() - 2, builder.length());
+			builder.append(" FROM ( ");
+			builder.append("SELECT p.name as player_name, p.position, t.name as team_name ");
+			builder.append("FROM team t ");
+			builder.append("JOIN player p ON p.team_id = t.id ");
+			builder.append(") a ");
+			builder.append("GROUP BY a.position");
+
+			PreparedStatement statement = connection.prepareStatement(builder.toString());
+
+			int index = 1;
+			for (String team : teamList) {
+				statement.setString(index++, team);
+			}
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					String position = resultSet.getString("position");
+					List<String> teamPlayerList = new ArrayList<>();
+
+					for (String team : teamList) {
+						String teamName = resultSet.getString(team);
+						teamPlayerList.add(teamName);
 					}
+
+					positionMap.put(position, teamPlayerList);
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return positionList;
+		return positionMap;
+	}
+
+	public List<String> getTeamNameList() {
+		List<String> teamList = new ArrayList<>();
+		try {
+			String query = "SELECT name FROM team";
+			PreparedStatement statement = connection.prepareStatement(query);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					teamList.add(resultSet.getString("name"));
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return teamList;
 	}
 }
