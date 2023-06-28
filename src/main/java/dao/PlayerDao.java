@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,8 +56,13 @@ public class PlayerDao {
 	public int updateTeamId(int id, int teamId) {
 		String sql = "update player set team_id = ? where id = ?";
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setInt(1, id);
-			statement.setInt(2, teamId);
+			if (teamId == 0) {
+				statement.setNull(1, Types.INTEGER);
+			} else {
+				statement.setInt(1, teamId);
+			}
+
+			statement.setInt(2, id);
 
 			int rowCount = statement.executeUpdate();
 
