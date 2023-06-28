@@ -30,17 +30,25 @@ public class BaseBallApp {
 		PositionDao positionDao = new PositionDao(connection);
 
 		PositionRespDto positionRespDto = positionDao.positionList();
-
 		Map<String, List<String>> positionMap = positionRespDto.getPositionMap();
-		System.out.printf("%-10s", "Position");
-		positionMap.keySet().forEach(team -> System.out.printf("%-10s", team));
+		List<String> teamList = positionRespDto.getTeamList();
+
+		System.out.printf("%-10s", "포지션");
+		for (String team : teamList) {
+			System.out.printf("%-10s", team);
+		}
 		System.out.println();
-		positionMap.forEach((position, teamPlayerList) -> {
+
+		for (String position : positionMap.keySet()) {
 			System.out.printf("%-10s", position);
-			teamPlayerList.forEach(player -> System.out.printf("%-10s", player));
+			List<String> teamPlayerList = positionMap.get(position);
+			for (String team : teamList) {
+				String playerName = teamPlayerList.get(teamList.indexOf(team));
+				System.out.printf("%-10s", playerName);
+			}
 			System.out.println();
-		});
-    
+		}
+
 		MyScanner scanner = new MyScanner();
 		ComponentScan componentScan = ComponentScan.getInstance();
 

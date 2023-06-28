@@ -10,4 +10,5 @@ import lombok.Getter;
 @Builder
 public class PositionRespDto {
 	private Map<String, List<String>> positionMap;
+	private List<String> teamList;
 }
