@@ -2,59 +2,51 @@ package service;
 
 import java.sql.Connection;
 import java.util.List;
-import dao.StadiumDAO;
-import dao.TeamDAO;
+import dao.StadiumDao;
+import dao.TeamDao;
 import db.DBConnection;
-import dto.TeamRespDTO;
+import dto.TeamRespDto;
 
 public class TeamService {
-	private StadiumDAO stadiumDAO;
-	private TeamDAO teamDAO;
+	private TeamDao teamDAO;
+	private StadiumDao stadiumDAO;
 	private Connection connection;
 
 	public TeamService() {
-<<<<<<< HEAD
-		this.stadiumDAO = StadiumDAO.getInstance();
-		this.teamDAO = TeamDAO.getInstance();
+		this.teamDAO = TeamDao.getInstance();
+		this.stadiumDAO = StadiumDao.getInstance();
 		this.connection = DBConnection.getInstance();
 	}
 
-	public TeamService(StadiumDAO stadiumDAO, TeamDAO teamDAO, Connection connection) {
+	public TeamService(StadiumDao stadiumDAO, TeamDao teamDAO) {
 		this.stadiumDAO = stadiumDAO;
 		this.teamDAO = teamDAO;
-=======
-		this.stadiumDAO = new StadiumDAO(DBConnection.getInstance());
-		this.teamDAO = new TeamDAO(DBConnection.getInstance());
->>>>>>> main
 		this.connection = DBConnection.getInstance();
 	}
 
 	public String addTeam(int stadiumId, String name) {
 		int result = teamDAO.createTeam(stadiumId, name);
-
-		if (result > 0)
-			return "성공";
-
-		return "실패";
+		if (result < 0) {
+			return "실패";
+		}
+		return "성공";
 	}
 
 	public String getTeamList() {
-		List<TeamRespDTO> teamList = teamDAO.selectTeamList();
-
+		List<TeamRespDto> teamList = teamDAO.selectTeamList();
 		if (teamList == null || teamList.size() < 0) {
 			return null;
 		}
-
 		return listToString(teamList);
 	}
 
-	private String listToString(List<TeamRespDTO> teamList) {
+	private String listToString(List<TeamRespDto> teamList) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("=============\n");
-		builder.append("  팀 목록\n");
+		builder.append("   팀 목록  \n");
 		builder.append("=============\n");
 
-		for (TeamRespDTO teamRespDTO : teamList) {
+		for (TeamRespDto teamRespDTO : teamList) {
 			builder.append(teamRespDTO.getTeamId() + "\t" +
 				teamRespDTO.getStadiumName() + "\t" +
 				teamRespDTO.getTeamName() + "\n");

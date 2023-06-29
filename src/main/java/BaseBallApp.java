@@ -1,50 +1,13 @@
-import java.sql.Connection;
-
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import constant.Position;
-import dao.PositionDao;
-import dao.StadiumDAO;
-import dao.TeamDAO;
-import db.DBConnection;
-import dto.PositionRespDto;
 import util.ComponentScan;
 import util.MethodInfo;
 import util.MyScanner;
-
-import util.annotation.RequestMapping;
 
 public class BaseBallApp {
 
 	//@TODO: 별도 App 클래스 만들어서 메인 메서드에서는 App.run(); 방식으로 구조 변경
 	public static void main(String[] args) throws Exception {
-		Connection connection = DBConnection.getInstance();
-		PositionDao positionDao = new PositionDao(connection);
-
-		PositionRespDto positionRespDto = positionDao.positionList();
-
-		Map<Position, List<String>> positionMap = positionRespDto.getPositionMap();
-		List<String> teamList = positionRespDto.getTeamList();
-
-		System.out.printf("%-10s", "포지션");
-		for (String team : teamList) {
-			System.out.printf("%-10s", team);
-		}
-		System.out.println();
-
-		for (Position position : positionMap.keySet()) {
-			System.out.printf("%-10s", position.getName());
-			List<String> teamPlayerList = positionMap.get(position);
-			for (String team : teamList) {
-				String playerName = teamPlayerList.get(teamList.indexOf(team));
-				System.out.printf("%-10s", playerName);
-			}
-			System.out.println();
-		}
 
 		MyScanner scanner = new MyScanner();
 		ComponentScan componentScan = ComponentScan.getInstance();

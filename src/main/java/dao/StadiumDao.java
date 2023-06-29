@@ -14,25 +14,22 @@ import lombok.RequiredArgsConstructor;
 import model.Stadium;
 
 @RequiredArgsConstructor
-public class StadiumDAO {
+public class StadiumDao {
 
-	private static StadiumDAO stadiumDAO;
+	private static StadiumDao stadiumDAO;
 	private final Connection connection;
 
-<<<<<<< HEAD
-	private StadiumDAO() {
+	private StadiumDao() {
 		connection = DBConnection.getInstance();
 	}
 
-	public static StadiumDAO getInstance() {
+	public static StadiumDao getInstance() {
 		if (stadiumDAO == null) {
-			stadiumDAO = new StadiumDAO();
+			stadiumDAO = new StadiumDao();
 		}
 		return stadiumDAO;
 	}
 
-=======
->>>>>>> main
 	public int createStadium(String name) {
 		String query = "INSERT INTO stadium(name, created_at) VALUES (?, now())";
 

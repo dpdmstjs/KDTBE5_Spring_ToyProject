@@ -46,20 +46,7 @@ public class PlayerService {
 
 		return listToString(playerList);
 	}
-
-	private String listToString(List<Player> playerList) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("=============================================\n");
-		builder.append("선수명\t포지션\t등록일\n");
-		builder.append("=============================================\n");
-
-		for (Player player : playerList) {
-			builder.append(player);
-		}
-
-		return builder.toString();
-	}
-
+  
 	public String getPositionList() {
 		PositionRespDto positionRespDto = playerDao.positionList();
 		Map<Position, List<String>> positionMap = positionRespDto.getPositionMap();
