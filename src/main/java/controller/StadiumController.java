@@ -19,20 +19,22 @@ public class StadiumController {
 	@RequestMapping(name = "야구장등록")
 	public String createStadium(String name) {
 
-		if (name.equals(null) || name.isEmpty())
+		if (name.equals(null) || name.isEmpty()) {
 			throw new ArgumentMismatchException("입력 값을 확인해주세요.");
+		}
 
 		return stadiumService.addStadium(name);
 	}
 
 	@RequestMapping(name = "야구장목록")
-	public String stadiumList() {
-		String stadiumListtoString = stadiumService.getStadiumList();
+	public String stadiums() {
+		String formattedStadiums = stadiumService.getStadiums();
 
-		if (stadiumListtoString == null)
+		if (formattedStadiums == null) {
 			throw new ElementNotFoundException("등록된 야구장이 없습니다.");
+		}
 
-		return stadiumListtoString;
+		return formattedStadiums;
 	}
 
 
