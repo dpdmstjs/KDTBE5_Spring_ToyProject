@@ -28,7 +28,7 @@ public class OutPlayerDao {
 		return outPlayerDao;
 	}
 
-	public int createOutPlayer(int playerId, String reason) {
+	public int insertOutPlayer(int playerId, String reason) {
 		String sql = "insert into out_player(player_id, reason) values (?, ?)";
 
 		try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -45,7 +45,7 @@ public class OutPlayerDao {
 	}
 
 	public List<OutPlayerRespDto> selectOutPlayers() {
-		List<OutPlayerRespDto> outPlayerList = new ArrayList<>();
+		List<OutPlayerRespDto> outPlayers = new ArrayList<>();
 
 		String sql = "select p.id, p.name, p.position, o.reason, o.created_at" +
 			" from out_player o left outer join player p on o.player_id = p.id";
@@ -61,13 +61,13 @@ public class OutPlayerDao {
 						.outCreatedAt(resultSet.getTimestamp("created_at"))
 						.build();
 
-					outPlayerList.add(outPlayerRespDto);
+					outPlayers.add(outPlayerRespDto);
 				}
 			}
 		} catch (SQLException e) {
 			System.out.println("퇴출선수 목록 조회 중 오류가 발생했습니다.");
 		}
 
-		return outPlayerList;
+		return outPlayers;
 	}
 }

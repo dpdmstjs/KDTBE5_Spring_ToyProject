@@ -15,8 +15,8 @@ import java.util.Map;
 import constant.Position;
 import db.DBConnection;
 import dto.PositionRespDto;
-import exception.ElementNotFoundException;
 import exception.DuplicateKeyException;
+import exception.ElementNotFoundException;
 import model.Player;
 
 public class PlayerDao {
@@ -36,7 +36,7 @@ public class PlayerDao {
 
 	private TeamDao teamDao = new TeamDao(DBConnection.getInstance());
 
-	public String createPlayer(int teamId, String name, Position position) throws SQLException {
+	public String insertPlayer(int teamId, String name, Position position) throws SQLException {
 		if (!teamDao.isExistTeam(teamId))
 			throw new ElementNotFoundException("해당 팀은 존재하지 않습니다.");
 
@@ -60,7 +60,7 @@ public class PlayerDao {
 	}
 
 	public List<Player> selectPlayersByTeam(int teamId) {
-		List<Player> playerList = new ArrayList<>();
+		List<Player> players = new ArrayList<>();
 
 		String sql = "select * from player where team_id = ?";
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -68,14 +68,14 @@ public class PlayerDao {
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
 					Player player = buildPlayerFromResultSet(resultSet);
-					playerList.add(player);
+					players.add(player);
 				}
 			}
 		} catch (SQLException e) {
 			System.out.println("선수 목록 조회 중 오류가 발생했습니다.");
 		}
 
-		return playerList;
+		return players;
 	}
 
 	public int updatePlayerTeamId(int id, int teamId) {
@@ -115,9 +115,9 @@ public class PlayerDao {
 		return null;
 	}
 
-	public PositionRespDto positionList() {
-		List<String> teamList = getTeamNameList();
-		Map<Position, List<String>> positionMap = new HashMap<>();
+	public PositionRespDto selectPlayersByPosition() {
+		List<String> teamList = selectTeams();
+		Map<Position, List<String>> players = new HashMap<>();
 
 		try {
 			StringBuilder builder = new StringBuilder();
@@ -153,34 +153,33 @@ public class PlayerDao {
 						String teamName = resultSet.getString(team);
 						teamPlayerList.add(teamName);
 					}
-					positionMap.put(position, teamPlayerList);
+					players.put(position, teamPlayerList);
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return PositionRespDto.builder()
-			.positionMap(positionMap)
+			.positionMap(players)
 			.teamList(teamList)
 			.build();
 	}
 
-	public List<String> getTeamNameList() {
-		List<String> teamList = new ArrayList<>();
+	public List<String> selectTeams() {
+		List<String> teams = new ArrayList<>();
 		try {
 			String query = "SELECT name FROM team";
 			PreparedStatement statement = connection.prepareStatement(query);
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
-					teamList.add(resultSet.getString("name"));
+					teams.add(resultSet.getString("name"));
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return teamList;
+		return teams;
 	}
-
 
 	private boolean isExistTeamPosition(int teamId, Position position) throws SQLException {
 		String query = "select count(*) from player where team_id = ? and position = ?";

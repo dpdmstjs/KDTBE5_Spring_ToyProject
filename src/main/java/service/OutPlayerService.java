@@ -21,14 +21,14 @@ public class OutPlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String createOutPlayer(int playerId, String reason) {
+	public String addOutPlayer(int playerId, String reason) {
 		try {
 			if (playerDao.selectPlayerById(playerId) == null)
 				throw new ElementNotFoundException("입력하신 ID에 해당하는 선수가 존재하지 않습니다.");
 
 			connection.setAutoCommit(false);
 
-			int outPlayerResult = outPlayerDao.createOutPlayer(playerId, reason);
+			int outPlayerResult = outPlayerDao.insertOutPlayer(playerId, reason);
 			int playerResult = playerDao.updatePlayerTeamId(playerId, 0);
 
 			if (outPlayerResult < 1 || playerResult < 1) {
@@ -44,22 +44,22 @@ public class OutPlayerService {
 		}
 	}
 
-	public String getOutPlayerList() {
-		List<OutPlayerRespDto> outPlayerList = outPlayerDao.selectOutPlayers();
+	public String getOutPlayers() {
+		List<OutPlayerRespDto> outPlayers = outPlayerDao.selectOutPlayers();
 
-		if (outPlayerList == null || outPlayerList.size() == 0)
+		if (outPlayers == null || outPlayers.size() == 0)
 			throw new ElementNotFoundException("등록된 퇴출선수가 없습니다.");
 
-		return listTostring(outPlayerList);
+		return outPlayersToString(outPlayers);
 	}
 
-	private String listTostring(List<OutPlayerRespDto> outPlayerList) {
+	private String outPlayersToString(List<OutPlayerRespDto> outPlayers) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("=============================================\n");
 		builder.append("순번\t선수명\t포지션\t이유\t퇴출일\n");
 		builder.append("=============================================\n");
 
-		for (OutPlayerRespDto outPlayer : outPlayerList) {
+		for (OutPlayerRespDto outPlayer : outPlayers) {
 			builder.append(outPlayer);
 		}
 

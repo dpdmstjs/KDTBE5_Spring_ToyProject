@@ -30,19 +30,19 @@ public class PlayerController {
 			throw new ArgumentMismatchException("입력 값을 확인해주세요.");
 
 		try {
-			return playerService.createPlayer(teamId, name, Position.findByName(position));
+			return playerService.addPlayer(teamId, name, Position.findByName(position));
 		} catch (ElementNotFoundException e) {
 			return e.getMessage();
 		}
 	}
 
 	@RequestMapping(name = "포지션별목록")
-	public String getPositionList() {
-		String positionListToString = playerService.getPositionList();
+	public String getPlayersByPosition() {
+		String playersToString = playerService.getPlayersByPosition();
 
-		if (positionListToString == null) {
+		if (playersToString == null) {
 			throw new ElementNotFoundException("포지션별 조회 목록이 없습니다.");
 		}
-		return positionListToString;
+		return playersToString;
 	}
 }
