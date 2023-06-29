@@ -17,9 +17,10 @@ import lombok.RequiredArgsConstructor;
 public class PositionDao {
 	private final Connection connection;
 
+
 	public PositionRespDto positionList() {
 		List<String> teamList = getTeamNameList();
-		Map<String, List<String>> positionMap = new HashMap<>();
+		Map<Position, List<String>> positionMap = new HashMap<>();
 
 		try {
 			StringBuilder builder = new StringBuilder();
@@ -49,7 +50,7 @@ public class PositionDao {
 
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
-					String position = resultSet.getString("position");
+					Position position = Position.findByName(resultSet.getString("position"));
 					List<String> teamPlayerList = new ArrayList<>();
 
 					for (String team : teamList) {
@@ -116,7 +117,8 @@ public class PositionDao {
 					// positionList.add(positionDto);
 				}
 			}
-			return positionList;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

@@ -1,8 +1,12 @@
 import java.sql.Connection;
+
+import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import constant.Position;
 import dao.PositionDao;
 import dao.StadiumDAO;
 import dao.TeamDAO;
@@ -12,17 +16,18 @@ import util.ComponentScan;
 import util.MethodInfo;
 import util.MyScanner;
 
+import util.annotation.RequestMapping;
+
 public class BaseBallApp {
 
 	//@TODO: 별도 App 클래스 만들어서 메인 메서드에서는 App.run(); 방식으로 구조 변경
 	public static void main(String[] args) throws Exception {
 		Connection connection = DBConnection.getInstance();
-		StadiumDAO stadiumDAO = new StadiumDAO(connection);
-		TeamDAO teamDAO = new TeamDAO(connection);
 		PositionDao positionDao = new PositionDao(connection);
 
 		PositionRespDto positionRespDto = positionDao.positionList();
-		Map<String, List<String>> positionMap = positionRespDto.getPositionMap();
+
+		Map<Position, List<String>> positionMap = positionRespDto.getPositionMap();
 		List<String> teamList = positionRespDto.getTeamList();
 
 		System.out.printf("%-10s", "포지션");
@@ -31,8 +36,8 @@ public class BaseBallApp {
 		}
 		System.out.println();
 
-		for (String position : positionMap.keySet()) {
-			System.out.printf("%-10s", position);
+		for (Position position : positionMap.keySet()) {
+			System.out.printf("%-10s", position.getName());
 			List<String> teamPlayerList = positionMap.get(position);
 			for (String team : teamList) {
 				String playerName = teamPlayerList.get(teamList.indexOf(team));
