@@ -1,11 +1,14 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import constant.Position;
 import dao.PlayerDao;
 import db.DBConnection;
+import exception.DuplicateKeyException;
+import exception.ElementNotFoundException;
 import model.Player;
 
 public class PlayerService {
@@ -18,13 +21,13 @@ public class PlayerService {
 	}
 
 	public String createPlayer(Integer teamId, String name, Position position) {
-		int result = playerDao.createPlayer(teamId, name, position);
+		try {
+			String result = playerDao.createPlayer(teamId, name, position);
 
-		if (result > 0) {
-			return "성공";
+			return result;
+		} catch (ElementNotFoundException | DuplicateKeyException | SQLException e) {
+			return e.getMessage();
 		}
-
-		return "실패";
 	}
 
 	public void getPlayer(int id) {
@@ -37,7 +40,7 @@ public class PlayerService {
 		List<Player> playerList = playerDao.selectPlayersByTeam(teamId);
 
 		if (playerList == null || playerList.size() == 0)
-			return null;
+			throw new ElementNotFoundException("해당 팀에 선수가 존재하지 않습니다.");
 
 		return listToString(playerList);
 	}

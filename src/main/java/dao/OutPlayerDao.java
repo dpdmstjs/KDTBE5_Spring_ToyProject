@@ -65,7 +65,7 @@ public class OutPlayerDao {
 				}
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			System.out.println("퇴출선수 목록 조회 중 오류가 발생했습니다.");
 		}
 
 		return outPlayerList;
