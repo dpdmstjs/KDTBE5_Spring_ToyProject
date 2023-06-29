@@ -63,8 +63,9 @@ public class ComponentScan {
 
 						try {
 							if (method.getParameterTypes().length == 0) {
-								method.invoke(instance);
-								break;
+								String response = (String)method.invoke(instance);
+
+								return response;
 							}
 
 							Class<?>[] parameterTypes = method.getParameterTypes();
