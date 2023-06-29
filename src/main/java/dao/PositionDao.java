@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import constant.Position;
 import dto.PositionRespDto;
 import lombok.RequiredArgsConstructor;
 
@@ -55,7 +54,7 @@ public class PositionDao {
 					List<String> teamPlayerList = new ArrayList<>();
 
 					for (String team : teamList) {
-						String teamName = resultSet.getString(team);
+						String teamName = resultSet.getString(team); // Update this line
 						teamPlayerList.add(teamName);
 					}
 					positionMap.put(position, teamPlayerList);
@@ -79,10 +78,47 @@ public class PositionDao {
 				while (resultSet.next()) {
 					teamList.add(resultSet.getString("name"));
 				}
+			} catch (SQLException e) {
+
+			}
+		} catch (Exception e) {
+
+		}
+		return teamList;
+	}
+
+	public List<PositionRespDto> getPositionInfo() throws SQLException {
+		List<PositionRespDto> positionList = new ArrayList<>();
+
+		String query1 =
+			"SELECT GROUP_CONCAT(DISTINCT CONCAT('GROUP_CONCAT(CASE WHEN t.name = ''', t.name, ''' THEN p.name ELSE NULL END) AS `', t.name, '`') SEPARATOR ',') "
+				+
+				"FROM player p JOIN team t ON p.team_id = t.id";
+
+		try (PreparedStatement statement1 = connection.prepareStatement(
+			query1); ResultSet resultSet1 = statement1.executeQuery()) {
+			resultSet1.next();
+
+			String teams = resultSet1.getString(1);
+
+			String query2 = "SELECT p.position," + teams +
+				"FROM player p JOIN team t ON p.team_id = t.id " +
+				"GROUP BY p.position";
+
+			try (PreparedStatement statement2 = connection.prepareStatement(
+				query2); ResultSet resultSet2 = statement2.executeQuery()) {
+				while (resultSet2.next()) {
+					String teamPlayers = resultSet2.getString(2);
+					List<String> teamPlayerList = Arrays.asList(teamPlayers.split(","));
+					// PositionRespDto positionDto = PositionRespDto.builder()
+					// 	.position(Position.findByName(resultSet2.getString("position")))
+					// 	.teamPlayers(teamPlayerList)
+					// 	.build();
+					// positionList.add(positionDto);
+				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return teamList;
 	}
 }
