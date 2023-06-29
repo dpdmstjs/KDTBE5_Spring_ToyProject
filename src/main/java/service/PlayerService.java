@@ -1,6 +1,7 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +9,6 @@ import constant.Position;
 import dao.PlayerDao;
 import db.DBConnection;
 import dto.PositionRespDto;
-import exception.DuplicateKeyException;
-import exception.ElementNotFoundException;
 import model.Player;
 
 public class PlayerService {
@@ -23,13 +22,13 @@ public class PlayerService {
 
 	public String addPlayer(Integer teamId, String name, Position position) {
 		try {
-			String result = playerDao.insertPlayer(teamId, name, position);
+			int result = playerDao.insertPlayer(teamId, name, position);
 
-		if (result > 0) {
 			return "성공";
-		}
 
-		return "실패";
+		} catch (SQLException e) {
+			return e.getMessage();
+		}
 	}
 
 	public void getPlayer(int id) {
@@ -44,17 +43,17 @@ public class PlayerService {
 		if (players == null || players.size() == 0)
 			return null;
 
-		return playersByTeamToString(playerList);
+		return playersByTeamToString(players);
 	}
 
 	public String getPlayersByPosition() {
 		PositionRespDto positionRespDto = playerDao.selectPlayersByPosition();
-		Map<Position, List<String>> positionMap = positionRespDto.getPositionMap();
-		List<String> teamList = positionRespDto.getTeamList();
+		Map<Position, List<String>> positionMap = positionRespDto.getPositions();
+		List<String> teamList = positionRespDto.getTeams();
 		return PlayersByPositionToString(positionMap, teamList);
 	}
 
-	private String PlayersByPositionToString(Map<Position, List<String>> positionMap, List<String> teamList) {
+	private String PlayersByPositionToString(Map<Position, List<String>> positions, List<String> teams) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format("%-10s", "포지션"));
 		for (String team : teams) {
