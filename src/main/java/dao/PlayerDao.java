@@ -11,14 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import constant.Position;
+import db.DBConnection;
+import exception.ElementNotFoundException;
 import lombok.RequiredArgsConstructor;
 import model.Player;
 
 @RequiredArgsConstructor
 public class PlayerDao {
 	private final Connection connection;
+	private TeamDAO teamDao = new TeamDAO(DBConnection.getInstance());
 
 	public int createPlayer(int teamId, String name, Position position) {
+		if (!teamDao.isExistTeam(teamId))
+			throw new ElementNotFoundException("해당 팀은 존재하지 않습니다.");
+
 		String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
 
 		try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -53,7 +59,7 @@ public class PlayerDao {
 		return playerList;
 	}
 
-	public int updateTeamId(int id, int teamId) {
+	public int updatePlayerTeamId(int id, int teamId) {
 		String sql = "update player set team_id = ? where id = ?";
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			if (teamId == 0) {

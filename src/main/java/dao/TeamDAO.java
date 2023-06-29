@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TeamDAO {
 	private final Connection connection;
-
 
 	public int createTeam(int stadiumId, String name) {
 		if (!isStadiumId(stadiumId)) {
@@ -37,7 +35,7 @@ public class TeamDAO {
 
 	public List<TeamRespDTO> selectTeamList() {
 		List<TeamRespDTO> teamList = new ArrayList<>();
-		String query =  "SELECT team.id, stadium.name AS stadium_name, team.name " +
+		String query = "SELECT team.id, stadium.name AS stadium_name, team.name " +
 			"FROM team " +
 			"JOIN stadium ON team.stadium_id = stadium.id";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -76,6 +74,25 @@ public class TeamDAO {
 		}
 
 		return false;
+	}
+
+	public boolean isExistTeam(int teamId) {
+		String query = "SELECT count(id) FROM team WHERE id = ?";
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setInt(1, teamId);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				resultSet.next();
+
+				if (resultSet.getInt(1) > 0) {
+					return true;
+				}
+
+				return false;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

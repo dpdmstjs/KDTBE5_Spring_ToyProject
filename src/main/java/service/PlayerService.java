@@ -41,6 +41,23 @@ public class PlayerService {
 	public String getPlayersByTeam(int teamId) {
 		List<Player> playerList = playerDao.selectPlayersByTeam(teamId);
 
-		return playerList.toString();
+		if (playerList == null)
+			return null;
+
+		return listToString(playerList);
+	}
+
+	private String listToString(List<Player> playerList) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("==========================\n");
+		builder.append("선수명\t포지션\t등록일\n");
+		builder.append("==========================\n");
+
+		for (Player player : playerList) {
+			builder.append(
+				player.getName() + "\t" + player.getPosition().getName() + "\t" + player.getCreatedAt() + "\n");
+		}
+
+		return builder.toString();
 	}
 }
