@@ -1,7 +1,7 @@
 package util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -18,7 +18,7 @@ public class MyScanner {
 	public MethodInfo parseData(String request) {
 		MethodInfo methodInfo = new MethodInfo();
 		List<Object> params = new ArrayList<>();
-		Map<String, Object> parameterMap = new HashMap<>();
+		Map<String, Object> parameterMap = new LinkedHashMap<>();
 
 		if (!request.contains("?")) {
 			methodInfo.setName(request);

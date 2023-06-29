@@ -1,5 +1,6 @@
 package constant;
 
+import exception.ElementNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -20,6 +21,6 @@ public enum Position {
 			return positon;
 		}
 
-		return null;
+		throw new ElementNotFoundException("포지션을 찾을 수 없습니다.");
 	}
 }

@@ -1,7 +1,6 @@
 package controller;
 
-import java.sql.SQLException;
-
+import exception.ElementNotFoundException;
 import service.OutPlayerService;
 import util.annotation.Controller;
 import util.annotation.RequestMapping;
@@ -16,11 +15,19 @@ public class OutPlayerController {
 
 	@RequestMapping(name = "퇴출목록")
 	public String getOutPlayerList() {
-		return outPlayerService.getOutPlayerList();
+		try {
+			return outPlayerService.getOutPlayerList();
+		} catch (ElementNotFoundException e) {
+			return e.getMessage();
+		}
 	}
 
 	@RequestMapping(name = "퇴출등록")
-	public String createOutPlayer(int playerId, String reason) throws SQLException {
-		return outPlayerService.createOutPlayer(playerId, reason);
+	public String createOutPlayer(int playerId, String reason) {
+		try {
+			return outPlayerService.createOutPlayer(playerId, reason);
+		} catch (ElementNotFoundException e) {
+			return e.getMessage();
+		}
 	}
 }
