@@ -18,7 +18,9 @@ public class PlayerController {
 	@RequestMapping(name = "선수목록")
 	public String getPlayersByTeam(int teamId) {
 		try {
-			return playerService.getPlayersByTeam(teamId);
+			String formattedPlayers = playerService.getPlayersByTeam(teamId);
+
+			return formattedPlayers;
 		} catch (ElementNotFoundException e) {
 			return e.getMessage();
 		}
@@ -38,11 +40,11 @@ public class PlayerController {
 
 	@RequestMapping(name = "포지션별목록")
 	public String getPlayersByPosition() {
-		String playersToString = playerService.getPlayersByPosition();
+		String formattedPlayers = playerService.getPlayersByPosition();
 
-		if (playersToString == null) {
+		if (formattedPlayers == null) {
 			throw new ElementNotFoundException("포지션별 조회 목록이 없습니다.");
 		}
-		return playersToString;
+		return formattedPlayers;
 	}
 }

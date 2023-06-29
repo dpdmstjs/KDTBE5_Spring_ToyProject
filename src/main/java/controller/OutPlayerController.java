@@ -16,7 +16,9 @@ public class OutPlayerController {
 	@RequestMapping(name = "퇴출목록")
 	public String getOutPlayers() {
 		try {
-			return outPlayerService.getOutPlayers();
+			String formattedOutPlayers = outPlayerService.getOutPlayers();
+
+			return formattedOutPlayers;
 		} catch (ElementNotFoundException e) {
 			return e.getMessage();
 		}
