@@ -1,7 +1,9 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class MyScanner {
@@ -16,24 +18,31 @@ public class MyScanner {
 	public MethodInfo parseData(String request) {
 		MethodInfo methodInfo = new MethodInfo();
 		List<Object> params = new ArrayList<>();
+		Map<String, Object> parameterMap = new HashMap<>();
 
 		if (!request.contains("?")) {
 			methodInfo.setName(request);
 			return methodInfo;
 		}
 
-		String[] methodArray = request.split("\\?");
+		try {
+			String[] methodArray = request.split("\\?");
 
-		methodInfo.setName(methodArray[0]);
+			methodInfo.setName(methodArray[0]);
 
-		String[] paramArray = methodArray[1].split("&");
+			String[] paramArray = methodArray[1].split("&");
 
-		for (String param : paramArray) {
-			params.add(param.split("=")[1]);
+			for (String param : paramArray) {
+				parameterMap.put(param.split("=")[0], param.split("=")[1]);
+			}
+
+			methodInfo.setParameterMap(parameterMap);
+
+			return methodInfo;
+		} catch (Exception e) {
+			System.out.println("입력 값을 확인해주세요.");
 		}
 
-		methodInfo.setParameters(params.toArray());
-
-		return methodInfo;
+		return null;
 	}
 }
