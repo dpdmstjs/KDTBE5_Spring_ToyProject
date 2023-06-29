@@ -20,12 +20,6 @@ public class OutPlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public OutPlayerService(PlayerDao playerDao, OutPlayerDao outPlayerDao) {
-		this.playerDao = playerDao;
-		this.outPlayerDao = outPlayerDao;
-		this.connection = DBConnection.getInstance();
-	}
-
 	public String createOutPlayer(int playerId, String reason) throws SQLException {
 		connection.setAutoCommit(false);
 		int outPlayerResult = outPlayerDao.createOutPlayer(playerId, reason);

@@ -17,11 +17,6 @@ public class PlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public PlayerService(PlayerDao playerDao) {
-		this.playerDao = playerDao;
-		this.connection = DBConnection.getInstance();
-	}
-
 	public String createPlayer(Integer teamId, String name, Position position) {
 		int result = playerDao.createPlayer(teamId, name, position);
 
