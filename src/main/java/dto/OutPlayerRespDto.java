@@ -17,7 +17,11 @@ public class OutPlayerRespDto {
 
 	@Override
 	public String toString() {
-		return playerId + "\t" + name + "\t" + position.getName() + "\t" + reason + "\t" + outCreatedAt.toString()
-			.split(" ")[0] + "\n";
+		return playerId + "\t" + name + "\t" + position.getName() + "\t" + reason + "\t" + formattedTimestamp(
+			outCreatedAt) + "\n";
+	}
+
+	private String formattedTimestamp(Timestamp timestamp) {
+		return timestamp.toString().split(" ")[0];
 	}
 }
