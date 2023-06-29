@@ -3,16 +3,15 @@ package service;
 import java.sql.Connection;
 import java.util.List;
 
-import dao.StadiumDAO;
+import dao.StadiumDao;
 import db.DBConnection;
-import model.Player;
 import model.Stadium;
 
 public class StadiumService {
-	private StadiumDAO stadiumDAO;
+	private StadiumDao stadiumDAO;
 	private Connection connection;
 
-	public StadiumService(StadiumDAO stadiumDAO) {
+	public StadiumService(StadiumDao stadiumDAO) {
 		this.stadiumDAO = stadiumDAO;
 		this.connection = DBConnection.getInstance();
 	}
