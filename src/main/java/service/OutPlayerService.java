@@ -15,8 +15,8 @@ public class OutPlayerService {
 	private Connection connection;
 
 	public OutPlayerService() {
-		this.playerDao = new PlayerDao(DBConnection.getInstance());
-		this.outPlayerDao = new OutPlayerDao(DBConnection.getInstance());
+		this.playerDao = PlayerDao.getInstance();
+		this.outPlayerDao = OutPlayerDao.getInstance();
 		this.connection = DBConnection.getInstance();
 	}
 
@@ -31,19 +31,19 @@ public class OutPlayerService {
 		int outPlayerResult = outPlayerDao.createOutPlayer(playerId, reason);
 		int playerResult = playerDao.updatePlayerTeamId(playerId, 0);
 
-		if (outPlayerResult == 1 && playerResult == 1) {
-			connection.commit();
-			return "성공";
+		if (outPlayerResult < 1 || playerResult < 1) {
+			connection.rollback();
+			throw new RuntimeException("퇴출등록 중 오류가 발생했습니다. 다시 시도해주세요.");
 		}
 
-		connection.rollback();
-		return "실패";
+		connection.commit();
+		return "성공";
 	}
 
 	public String getOutPlayerList() {
 		List<OutPlayerRespDto> outPlayerList = outPlayerDao.selectOutPlayers();
 
-		if (outPlayerList == null)
+		if (outPlayerList == null || outPlayerList.size() == 0)
 			return null;
 
 		return listTostring(outPlayerList);

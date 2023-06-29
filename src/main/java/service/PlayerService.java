@@ -13,7 +13,7 @@ public class PlayerService {
 	private Connection connection;
 
 	public PlayerService() {
-		this.playerDao = new PlayerDao(DBConnection.getInstance());
+		this.playerDao = PlayerDao.getInstance();
 		this.connection = DBConnection.getInstance();
 	}
 
@@ -41,7 +41,7 @@ public class PlayerService {
 	public String getPlayersByTeam(int teamId) {
 		List<Player> playerList = playerDao.selectPlayersByTeam(teamId);
 
-		if (playerList == null)
+		if (playerList == null || playerList.size() == 0)
 			return null;
 
 		return listToString(playerList);
@@ -49,9 +49,9 @@ public class PlayerService {
 
 	private String listToString(List<Player> playerList) {
 		StringBuilder builder = new StringBuilder();
-		builder.append("==========================\n");
+		builder.append("=============================================\n");
 		builder.append("선수명\t포지션\t등록일\n");
-		builder.append("==========================\n");
+		builder.append("=============================================\n");
 
 		for (Player player : playerList) {
 			builder.append(player);
