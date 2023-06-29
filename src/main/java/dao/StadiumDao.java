@@ -75,7 +75,7 @@ public class StadiumDao {
 		return stadiums;
 	}
 
-	protected boolean isStadiumId(int stadiumId) {
+	protected boolean isExistStadiumId(int stadiumId) {
 		String query = "SELECT COUNT(id) FROM stadium WHERE id = ?";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setInt(1, stadiumId);
