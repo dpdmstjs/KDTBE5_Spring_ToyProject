@@ -29,7 +29,7 @@ public class OutPlayerService {
 	public String createOutPlayer(int playerId, String reason) throws SQLException {
 		connection.setAutoCommit(false);
 		int outPlayerResult = outPlayerDao.createOutPlayer(playerId, reason);
-		int playerResult = playerDao.updateTeamId(playerId, 0);
+		int playerResult = playerDao.updatePlayerTeamId(playerId, 0);
 
 		if (outPlayerResult == 1 && playerResult == 1) {
 			connection.commit();
@@ -43,6 +43,22 @@ public class OutPlayerService {
 	public String getOutPlayerList() {
 		List<OutPlayerRespDto> outPlayerList = outPlayerDao.selectOutPlayers();
 
-		return outPlayerList.toString();
+		if (outPlayerList == null)
+			return null;
+
+		return listTostring(outPlayerList);
+	}
+
+	private String listTostring(List<OutPlayerRespDto> outPlayerList) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("=============================================\n");
+		builder.append("순번\t선수명\t포지션\t이유\t퇴출일\n");
+		builder.append("=============================================\n");
+
+		for (OutPlayerRespDto outPlayer : outPlayerList) {
+			builder.append(outPlayer);
+		}
+
+		return builder.toString();
 	}
 }
