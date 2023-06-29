@@ -11,5 +11,4 @@ public class TeamRespDTO {
 	private Integer teamId;
 	private String stadiumName;
 	private String teamName;
-
 }
