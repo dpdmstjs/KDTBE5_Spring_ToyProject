@@ -14,4 +14,9 @@ public class Player {
 	private String name;
 	private Position position;
 	private Timestamp createdAt;
+
+	@Override
+	public String toString() {
+		return name + "\t" + position.getName() + "\t" + createdAt + "\n";
+	}
 }

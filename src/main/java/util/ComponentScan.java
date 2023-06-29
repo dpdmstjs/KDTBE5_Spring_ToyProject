@@ -3,10 +3,13 @@ package util;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import exception.ArgumentMismatchException;
 import util.annotation.Controller;
 import util.annotation.RequestMapping;
 
@@ -42,7 +45,6 @@ public class ComponentScan {
 	}
 
 	//@TODO: Depth 너무 깊음
-	//@TODO: 입력값 파라미터 id도 비교해야됨
 	public String findUri(Set<Class> classes, MethodInfo methodInfo) throws Exception {
 		boolean isFind = false;
 		for (Class cls : classes) {
@@ -68,10 +70,15 @@ public class ComponentScan {
 								return response;
 							}
 
+							if (!isMatchParameters(method.getParameters(), methodInfo.getParameterMap())) {
+								throw new ArgumentMismatchException("입력 값을 확인해주세요.");
+							}
+
 							Class<?>[] parameterTypes = method.getParameterTypes();
 							Object[] arg = new Object[parameterTypes.length];
+							Object[] inputArgs = methodInfo.getParameterMap().values().toArray();
 							for (int i = 0; i < parameterTypes.length; i++) {
-								arg[i] = convertArgumentType(methodInfo.getParameters()[i], parameterTypes[i]);
+								arg[i] = convertArgumentType(inputArgs[i], parameterTypes[i]);
 							}
 
 							String response = (String)method.invoke(instance, arg);
@@ -90,7 +97,7 @@ public class ComponentScan {
 		return null;
 	}
 
-	private static Object convertArgumentType(Object arg, Class<?> targetType) {
+	private Object convertArgumentType(Object arg, Class<?> targetType) {
 		// 타입에 따라 적절한 변환 로직을 구현한다
 		if (targetType.equals(int.class) || targetType.equals(Integer.class)) {
 			return Integer.parseInt(arg.toString());
@@ -102,5 +109,15 @@ public class ComponentScan {
 		// 추가적인 타입 변환 로직을 구현한다
 
 		return arg;
+	}
+
+	private boolean isMatchParameters(Parameter[] parameters, Map<String, Object> inputParameters) {
+		for (Parameter parameter : parameters) {
+			if (!inputParameters.containsKey(parameter.getName())) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
