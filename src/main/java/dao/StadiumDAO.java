@@ -17,12 +17,11 @@ public class StadiumDAO {
 
 	private final Connection connection;
 
-	public int createStadium(int id, String name) {
-		String query = "INSERT INTO stadium(id, name, created_at) VALUES (?, ?, now())";
+	public int createStadium(String name) {
+		String query = "INSERT INTO stadium(name, created_at) VALUES (?, now())";
 
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
-			statement.setInt(1, id);
-			statement.setString(2, name);
+			statement.setString(1, name);
 
 			int rowCount = statement.executeUpdate();
 

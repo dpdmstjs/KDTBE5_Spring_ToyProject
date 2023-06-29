@@ -16,8 +16,8 @@ public class StadiumService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String addStadium(int id, String name) {
-		int result = stadiumDAO.createStadium(id, name);
+	public String addStadium(String name) {
+		int result = stadiumDAO.createStadium(name);
 
 		if (result > 0)
 			return "성공";

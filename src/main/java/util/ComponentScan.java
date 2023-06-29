@@ -41,6 +41,8 @@ public class ComponentScan {
 		return classes;
 	}
 
+	//@TODO: Depth 너무 깊음
+	//@TODO: 입력값 파라미터 id도 비교해야됨
 	public String findUri(Set<Class> classes, MethodInfo methodInfo) throws Exception {
 		boolean isFind = false;
 		for (Class cls : classes) {
