@@ -15,12 +15,11 @@ import lombok.RequiredArgsConstructor;
 public class TeamDAO {
 	private final Connection connection;
 
-	public int createTeam(int teamId, int stadiumId, String name) {
-		String query = "INSERT INTO team(id, stadium_id, name, created_at) VALUES (?, ?, ?, now())";
+	public int createTeam(int stadiumId, String name) {
+		String query = "INSERT INTO team(stadium_id, name, created_at) VALUES (?, ?, now())";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
-			statement.setInt(1, teamId);
-			statement.setInt(2, stadiumId);
-			statement.setString(3, name);
+			statement.setInt(1, stadiumId);
+			statement.setString(2, name);
 
 			int rowCount = statement.executeUpdate();
 
@@ -33,9 +32,9 @@ public class TeamDAO {
 
 	public List<TeamRespDTO> selectTeamList() {
 		List<TeamRespDTO> teamList = new ArrayList<>();
-		String query =  "SELECT team.id, stadium.name AS stadium_name, team.name " +
-						"FROM team " +
-						"JOIN stadium ON team.stadium_id = stadium.id";
+		String query = "SELECT team.id, stadium.name AS stadium_name, team.name " +
+			"FROM team " +
+			"JOIN stadium ON team.stadium_id = stadium.id";
 		try (Statement statement = connection.createStatement()) {
 			try (ResultSet resultSet = statement.executeQuery(query)) {
 				while (resultSet.next()) {

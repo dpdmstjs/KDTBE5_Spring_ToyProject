@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import constant.Position;
 import dto.PositionRespDto;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class PositionDao {
 	private final Connection connection;
-
 
 	public PositionRespDto positionList() {
 		List<String> teamList = getTeamNameList();
@@ -120,5 +120,7 @@ public class PositionDao {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+
+		return positionList;
 	}
 }

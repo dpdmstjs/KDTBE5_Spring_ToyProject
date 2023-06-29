@@ -5,6 +5,7 @@ import java.util.List;
 
 import dao.StadiumDAO;
 import dao.TeamDAO;
+import db.DBConnection;
 import dto.TeamRespDTO;
 
 public class TeamService {
@@ -12,8 +13,14 @@ public class TeamService {
 	private TeamDAO teamDAO;
 	private Connection connection;
 
-	public String addTeam(int teamId, int stadiumId, String name) {
-		int result = teamDAO.createTeam(teamId, stadiumId, name);
+	public TeamService() {
+		this.stadiumDAO = new StadiumDAO(DBConnection.getInstance());
+		this.teamDAO = new TeamDAO(DBConnection.getInstance());
+		this.connection = DBConnection.getInstance();
+	}
+
+	public String addTeam(int stadiumId, String name) {
+		int result = teamDAO.createTeam(stadiumId, name);
 
 		if (result > 0)
 			return "성공";
