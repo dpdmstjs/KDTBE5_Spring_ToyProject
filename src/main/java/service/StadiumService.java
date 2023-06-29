@@ -5,6 +5,7 @@ import java.util.List;
 
 import dao.StadiumDAO;
 import db.DBConnection;
+import model.Player;
 import model.Stadium;
 
 public class StadiumService {
@@ -31,9 +32,27 @@ public class StadiumService {
 		return stadium;
 	}
 
-	public List<Stadium> getStadiumList() {
+	public String getStadiumList() {
 		List<Stadium> stadiumList = stadiumDAO.selectStadiumList();
 
-		return stadiumList;
+		if (stadiumList == null) {
+			return null;
+		}
+		return listToString(stadiumList);
 	}
+
+	private String listToString(List<Stadium> stadiumList) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("=============\n");
+		builder.append("야구장명\n");
+		builder.append("============\n");
+
+		for (Stadium stadium : stadiumList) {
+			builder.append(
+				stadium.getName() + "\n");
+		}
+
+		return builder.toString();
+	}
+
 }

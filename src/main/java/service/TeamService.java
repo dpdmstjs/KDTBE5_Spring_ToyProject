@@ -2,7 +2,6 @@ package service;
 
 import java.sql.Connection;
 import java.util.List;
-
 import dao.StadiumDAO;
 import dao.TeamDAO;
 import db.DBConnection;
@@ -14,8 +13,19 @@ public class TeamService {
 	private Connection connection;
 
 	public TeamService() {
+<<<<<<< HEAD
+		this.stadiumDAO = StadiumDAO.getInstance();
+		this.teamDAO = TeamDAO.getInstance();
+		this.connection = DBConnection.getInstance();
+	}
+
+	public TeamService(StadiumDAO stadiumDAO, TeamDAO teamDAO, Connection connection) {
+		this.stadiumDAO = stadiumDAO;
+		this.teamDAO = teamDAO;
+=======
 		this.stadiumDAO = new StadiumDAO(DBConnection.getInstance());
 		this.teamDAO = new TeamDAO(DBConnection.getInstance());
+>>>>>>> main
 		this.connection = DBConnection.getInstance();
 	}
 
@@ -28,10 +38,30 @@ public class TeamService {
 		return "실패";
 	}
 
-	public List<TeamRespDTO> getTeamList() {
+	public String getTeamList() {
 		List<TeamRespDTO> teamList = teamDAO.selectTeamList();
 
-		return teamList;
+		if (teamList == null || teamList.size() < 0) {
+			return null;
+		}
+
+		return listToString(teamList);
 	}
+
+	private String listToString(List<TeamRespDTO> teamList) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("=============\n");
+		builder.append("  팀 목록\n");
+		builder.append("=============\n");
+
+		for (TeamRespDTO teamRespDTO : teamList) {
+			builder.append(teamRespDTO.getTeamId() + "\t" +
+				teamRespDTO.getStadiumName() + "\t" +
+				teamRespDTO.getTeamName() + "\n");
+		}
+
+		return builder.toString();
+	}
+
 
 }

@@ -35,4 +35,14 @@ public class PlayerController {
 			return e.getMessage();
 		}
 	}
+
+	@RequestMapping(name = "포지션별목록")
+	public String getPositionList() {
+		String positionListToString = playerService.getPositionList();
+
+		if (positionListToString == null) {
+			throw new ElementNotFoundException("포지션별 조회 목록이 없습니다.");
+		}
+		return positionListToString;
+	}
 }
