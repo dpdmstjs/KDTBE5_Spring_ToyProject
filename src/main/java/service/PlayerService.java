@@ -54,8 +54,7 @@ public class PlayerService {
 		builder.append("==========================\n");
 
 		for (Player player : playerList) {
-			builder.append(
-				player.getName() + "\t" + player.getPosition().getName() + "\t" + player.getCreatedAt() + "\n");
+			builder.append(player);
 		}
 
 		return builder.toString();
