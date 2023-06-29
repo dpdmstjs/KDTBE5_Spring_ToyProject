@@ -23,12 +23,12 @@ public class TeamController {
 	}
 
 	@RequestMapping(name="팀목록")
-	public String teamList() {
-		String teamListtoString = teamService.getTeamList();
+	public String teams() {
+		String formattedTeams = teamService.getTeams();
 
-		if (teamListtoString == null)
+		if (formattedTeams == null)
 			throw new ElementNotFoundException("등록된 야구장이 없습니다.");
 
-		return teamListtoString;
+		return formattedTeams ;
 	}
 }

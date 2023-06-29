@@ -30,7 +30,7 @@ public class StadiumDao {
 		return stadiumDAO;
 	}
 
-	public int createStadium(String name) {
+	public int insertStadium(String name) {
 		String query = "INSERT INTO stadium(name, created_at) VALUES (?, now())";
 
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -59,20 +59,39 @@ public class StadiumDao {
 		return null;
 	}
 
-	public List<Stadium> selectStadiumList() {
-		List<Stadium> stadiumList = new ArrayList<>();
+	public List<Stadium> selectStadiums() {
+		List<Stadium> stadiums = new ArrayList<>();
 		String query = "SELECT * FROM stadium";
 		try (Statement statement = connection.createStatement()) {
 			try (ResultSet resultSet = statement.executeQuery(query)) {
 				while (resultSet.next()) {
 					Stadium stadium = buildStadiumFromResultSet(resultSet);
-					stadiumList.add(stadium);
+					stadiums.add(stadium);
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return stadiumList;
+		return stadiums;
+	}
+
+	protected boolean isStadiumId(int stadiumId) {
+		String query = "SELECT COUNT(id) FROM stadium WHERE id = ?";
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setInt(1, stadiumId);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				resultSet.next();
+
+				if (resultSet.getInt(1) > 0) {
+					return true;
+				}
+
+				return false;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private Stadium buildStadiumFromResultSet(ResultSet resultSet) throws SQLException {

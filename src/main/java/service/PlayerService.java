@@ -1,15 +1,12 @@
 package service;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import constant.Position;
 import dao.PlayerDao;
 import db.DBConnection;
-import exception.DuplicateKeyException;
-import exception.ElementNotFoundException;
 import dto.PositionRespDto;
 import model.Player;
 
@@ -22,14 +19,19 @@ public class PlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String createPlayer(Integer teamId, String name, Position position) {
-		try {
-			String result = playerDao.createPlayer(teamId, name, position);
+	public PlayerService(PlayerDao playerDao) {
+		this.playerDao = playerDao;
+		this.connection = DBConnection.getInstance();
+	}
 
-			return result;
-		} catch (ElementNotFoundException | DuplicateKeyException | SQLException e) {
-			return e.getMessage();
+	public String createPlayer(Integer teamId, String name, Position position) {
+		int result = playerDao.createPlayer(teamId, name, position);
+
+		if (result > 0) {
+			return "성공";
 		}
+
+		return "실패";
 	}
 
 	public void getPlayer(int id) {
@@ -39,43 +41,43 @@ public class PlayerService {
 	}
 
 	public String getPlayersByTeam(int teamId) {
-		List<Player> playerList = playerDao.selectPlayersByTeam(teamId);
+		List<Player> players = playerDao.selectPlayersByTeam(teamId);
 
-		if (playerList == null || playerList.size() == 0)
-			throw new ElementNotFoundException("해당 팀에 선수가 존재하지 않습니다.");
+		if (players == null || players.size() == 0)
+			return null;
 
-		return listToString(playerList);
-	}
-  
-	public String getPositionList() {
-		PositionRespDto positionRespDto = playerDao.positionList();
-		Map<Position, List<String>> positionMap = positionRespDto.getPositionMap();
-		List<String> teamList = positionRespDto.getTeamList();
-		return listToString(positionMap, teamList);
+		return buildPlayerListString(players);
 	}
 
-	private String listToString(Map<Position, List<String>> positionMap, List<String> teamList) {
+	public String getPositions() {
+		PositionRespDto positionRespDto = playerDao.selectPositions();
+		Map<Position, List<String>> positionMap = positionRespDto.getPositions();
+		List<String> teamList = positionRespDto.getTeams();
+		return buildPositionListString(positionMap, teamList);
+	}
+
+	private String buildPositionListString(Map<Position, List<String>> positions, List<String> teams) {
 		StringBuilder builder = new StringBuilder();
-		System.out.printf("%-10s", "포지션");
-		for (String team : teamList) {
-			System.out.printf("%-10s", team);
+		builder.append(String.format("%-10s", "포지션"));
+		for (String team : teams) {
+			builder.append(String.format("%-10s", team));
 		}
-		System.out.println();
+		builder.append("\n");
 
-		for (Position position : positionMap.keySet()) {
+		for (Position position : positions.keySet()) {
 
-			System.out.printf("%-10s", position.getName());
-			List<String> teamPlayerList = positionMap.get(position);
-			for (String team : teamList) {
-				String playerName = teamPlayerList.get(teamList.indexOf(team));
-				System.out.printf("%-10s", playerName);
+			builder.append(String.format("%-10s", position.getName()));
+			List<String> teamPlayers = positions.get(position);
+			for (String team : teams) {
+				String playerName = teamPlayers.get(teams.indexOf(team));
+				builder.append(String.format("%-10s", playerName));
 			}
-			System.out.println();
+			builder.append("\n");
 		}
 		return builder.toString();
 	}
 
-	private String listToString(List<Player> playerList) {
+	private String buildPlayerListString(List<Player> playerList) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("==========================\n");
 		builder.append("선수명\t포지션\t등록일\n");

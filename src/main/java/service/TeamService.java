@@ -32,21 +32,21 @@ public class TeamService {
 		return "성공";
 	}
 
-	public String getTeamList() {
-		List<TeamRespDto> teamList = teamDAO.selectTeamList();
-		if (teamList == null || teamList.size() < 0) {
+	public String getTeams() {
+		List<TeamRespDto> teams = teamDAO.selectTeams();
+		if (teams == null || teams.size() < 0) {
 			return null;
 		}
-		return listToString(teamList);
+		return buildTeamListString(teams);
 	}
 
-	private String listToString(List<TeamRespDto> teamList) {
+	private String buildTeamListString(List<TeamRespDto> teams) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("=============\n");
 		builder.append("   팀 목록  \n");
 		builder.append("=============\n");
 
-		for (TeamRespDto teamRespDTO : teamList) {
+		for (TeamRespDto teamRespDTO : teams) {
 			builder.append(teamRespDTO.getTeamId() + "\t" +
 				teamRespDTO.getStadiumName() + "\t" +
 				teamRespDTO.getTeamName() + "\n");
