@@ -17,13 +17,11 @@ public class PlayerController {
 
 	@RequestMapping(name = "선수목록")
 	public String getPlayersByTeam(int teamId) {
-
-		String playerListtoString = playerService.getPlayersByTeam(teamId);
-
-		if (playerListtoString == null)
-			throw new ElementNotFoundException("등록된 선수가 없습니다.");
-
-		return playerListtoString;
+		try {
+			return playerService.getPlayersByTeam(teamId);
+		} catch (ElementNotFoundException e) {
+			return e.getMessage();
+		}
 	}
 
 	@RequestMapping(name = "선수등록")
@@ -31,7 +29,11 @@ public class PlayerController {
 		if (teamId <= 0 || name.equals(null) || name.isEmpty() || position.equals(null) || position.isEmpty())
 			throw new ArgumentMismatchException("입력 값을 확인해주세요.");
 
-		return playerService.createPlayer(teamId, name, Position.findByName(position));
+		try {
+			return playerService.createPlayer(teamId, name, Position.findByName(position));
+		} catch (ElementNotFoundException e) {
+			return e.getMessage();
+		}
 	}
 
 	@RequestMapping(name = "포지션별목록")
