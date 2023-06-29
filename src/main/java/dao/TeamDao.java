@@ -30,7 +30,7 @@ public class TeamDao {
 	private StadiumDao stadiumDao = new StadiumDao(DBConnection.getInstance());
 
 	public int createTeam(int stadiumId, String name) {
-		if (!stadiumDao.isStadiumId(stadiumId)) {
+		if (!stadiumDao.isExistStadiumId(stadiumId)) {
 			throw new IllegalArgumentException("없는 경기장 입니다.");
 		}
 
