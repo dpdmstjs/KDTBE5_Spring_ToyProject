@@ -9,20 +9,32 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import db.DBConnection;
 import lombok.RequiredArgsConstructor;
 import model.Stadium;
 
 @RequiredArgsConstructor
 public class StadiumDAO {
 
+	private static StadiumDAO stadiumDAO;
 	private final Connection connection;
 
-	public int createStadium(int id, String name) {
-		String query = "INSERT INTO stadium(id, name, created_at) VALUES (?, ?, now())";
+	private StadiumDAO() {
+		connection = DBConnection.getInstance();
+	}
+
+	public static StadiumDAO getInstance() {
+		if (stadiumDAO == null) {
+			stadiumDAO = new StadiumDAO();
+		}
+		return stadiumDAO;
+	}
+
+	public int createStadium(String name) {
+		String query = "INSERT INTO stadium(name, created_at) VALUES (?, now())";
 
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
-			statement.setInt(1, id);
-			statement.setString(2, name);
+			statement.setString(1, name);
 
 			int rowCount = statement.executeUpdate();
 
@@ -76,6 +88,4 @@ public class StadiumDAO {
 	}
 
 }
-
-
 

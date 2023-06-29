@@ -19,6 +19,7 @@ public class TeamController {
 
 	@RequestMapping(name="팀목록")
 	public String teamList() {
-		return teamService.getTeamList().toString();
+		String teamListtoString = teamService.getTeamList();
+		return teamListtoString;
 	}
 }
