@@ -8,6 +8,8 @@ import constant.Position;
 import dao.PlayerDao;
 import db.DBConnection;
 import dto.PositionRespDto;
+import exception.DuplicateKeyException;
+import exception.ElementNotFoundException;
 import model.Player;
 
 public class PlayerService {
@@ -19,13 +21,9 @@ public class PlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public PlayerService(PlayerDao playerDao) {
-		this.playerDao = playerDao;
-		this.connection = DBConnection.getInstance();
-	}
-
-	public String createPlayer(Integer teamId, String name, Position position) {
-		int result = playerDao.createPlayer(teamId, name, position);
+	public String addPlayer(Integer teamId, String name, Position position) {
+		try {
+			String result = playerDao.insertPlayer(teamId, name, position);
 
 		if (result > 0) {
 			return "성공";
@@ -46,17 +44,17 @@ public class PlayerService {
 		if (players == null || players.size() == 0)
 			return null;
 
-		return buildPlayerListString(players);
+		return playersByTeamToString(playerList);
 	}
 
-	public String getPositions() {
-		PositionRespDto positionRespDto = playerDao.selectPositions();
-		Map<Position, List<String>> positionMap = positionRespDto.getPositions();
-		List<String> teamList = positionRespDto.getTeams();
-		return buildPositionListString(positionMap, teamList);
+	public String getPlayersByPosition() {
+		PositionRespDto positionRespDto = playerDao.selectPlayersByPosition();
+		Map<Position, List<String>> positionMap = positionRespDto.getPositionMap();
+		List<String> teamList = positionRespDto.getTeamList();
+		return PlayersByPositionToString(positionMap, teamList);
 	}
 
-	private String buildPositionListString(Map<Position, List<String>> positions, List<String> teams) {
+	private String PlayersByPositionToString(Map<Position, List<String>> positionMap, List<String> teamList) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format("%-10s", "포지션"));
 		for (String team : teams) {
@@ -77,7 +75,7 @@ public class PlayerService {
 		return builder.toString();
 	}
 
-	private String buildPlayerListString(List<Player> playerList) {
+	private String playersByTeamToString(List<Player> playerList) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("==========================\n");
 		builder.append("선수명\t포지션\t등록일\n");

@@ -14,9 +14,11 @@ public class OutPlayerController {
 	}
 
 	@RequestMapping(name = "퇴출목록")
-	public String getOutPlayerList() {
+	public String getOutPlayers() {
 		try {
-			return outPlayerService.getOutPlayerList();
+			String formattedOutPlayers = outPlayerService.getOutPlayers();
+
+			return formattedOutPlayers;
 		} catch (ElementNotFoundException e) {
 			return e.getMessage();
 		}
@@ -25,7 +27,7 @@ public class OutPlayerController {
 	@RequestMapping(name = "퇴출등록")
 	public String createOutPlayer(int playerId, String reason) {
 		try {
-			return outPlayerService.createOutPlayer(playerId, reason);
+			return outPlayerService.addOutPlayer(playerId, reason);
 		} catch (ElementNotFoundException e) {
 			return e.getMessage();
 		}

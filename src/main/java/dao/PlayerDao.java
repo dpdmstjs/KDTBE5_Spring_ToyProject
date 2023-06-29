@@ -15,8 +15,8 @@ import java.util.Map;
 import constant.Position;
 import db.DBConnection;
 import dto.PositionRespDto;
-import exception.ElementNotFoundException;
 import exception.DuplicateKeyException;
+import exception.ElementNotFoundException;
 import model.Player;
 
 public class PlayerDao {
@@ -36,7 +36,7 @@ public class PlayerDao {
 
 	private TeamDao teamDao = new TeamDao(DBConnection.getInstance());
 
-	public int createPlayer(int teamId, String name, Position position) {
+	public String insertPlayer(int teamId, String name, Position position) throws SQLException {
 		if (!teamDao.isExistTeam(teamId))
 			throw new ElementNotFoundException("해당 팀은 존재하지 않습니다.");
 
@@ -118,9 +118,9 @@ public class PlayerDao {
 		return null;
 	}
 
-	public PositionRespDto selectPositions() {
-		List<String> teams = getTeamNames();
-		Map<Position, List<String>> positions = new HashMap<>();
+	public PositionRespDto selectPlayersByPosition() {
+		List<String> teamList = selectTeams();
+		Map<Position, List<String>> players = new HashMap<>();
 
 		try {
 			StringBuilder builder = new StringBuilder();
@@ -156,19 +156,19 @@ public class PlayerDao {
 						String teamName = resultSet.getString(team);
 						teamPlayers.add(teamName);
 					}
-					positions.put(position, teamPlayers);
+					players.put(position, teamPlayerList);
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return PositionRespDto.builder()
-			.positions(positions)
-			.teams(teams)
+			.positionMap(players)
+			.teamList(teamList)
 			.build();
 	}
 
-	public List<String> getTeamNames() {
+	public List<String> selectTeams() {
 		List<String> teams = new ArrayList<>();
 		try {
 			String query = "SELECT name FROM team";
@@ -183,7 +183,6 @@ public class PlayerDao {
 		}
 		return teams;
 	}
-
 
 	private boolean isExistTeamPosition(int teamId, Position position) throws SQLException {
 		String query = "select count(*) from player where team_id = ? and position = ?";
