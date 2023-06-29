@@ -14,23 +14,55 @@ import java.util.Map;
 
 import constant.Position;
 import db.DBConnection;
+<<<<<<< HEAD
 import dto.PositionRespDto;
 import exception.ElementNotFoundException;
 import lombok.RequiredArgsConstructor;
+=======
+import exception.DuplicateKeyException;
+import exception.ElementNotFoundException;
+>>>>>>> b41663cb676eedfad657182463b5d0878a615165
 import model.Player;
 
-@RequiredArgsConstructor
 public class PlayerDao {
+	private static PlayerDao playerDao;
 	private final Connection connection;
+	private TeamDAO teamDao = new TeamDAO(DBConnection.getInstance());
+
+<<<<<<< HEAD
+	public int createPlayer(int teamId, String name, Position position) {
+		if (!teamDao.isExistTeam(teamId))
+			throw new ElementNotFoundException("해당 팀은 존재하지 않습니다.");
+
+		String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
+=======
+	private PlayerDao() {
+		this.connection = DBConnection.getInstance();
+	}
+>>>>>>> b41663cb676eedfad657182463b5d0878a615165
+
+	public static PlayerDao getInstance() {
+		if (playerDao == null) {
+			playerDao = new PlayerDao();
+		}
+
+		return playerDao;
+	}
+
 	private TeamDAO teamDao = new TeamDAO(DBConnection.getInstance());
 
 	public int createPlayer(int teamId, String name, Position position) {
 		if (!teamDao.isExistTeam(teamId))
 			throw new ElementNotFoundException("해당 팀은 존재하지 않습니다.");
 
-		String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
+		try {
+			if (isExistTeamPosition(teamId, position)) {
+				throw new DuplicateKeyException("해당 팀에 동일한 포지션의 선수가 존재합니다.");
+			}
 
-		try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
+
+			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			statement.setInt(1, teamId);
 			statement.setString(2, name);
 			statement.setString(3, position.getName());
@@ -39,8 +71,10 @@ public class PlayerDao {
 
 			return rowCount;
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			System.out.println("선수 등록 중 오류가 발생했습니다.");
 		}
+
+		return -1;
 	}
 
 	public List<Player> selectPlayersByTeam(int teamId) {
@@ -56,7 +90,7 @@ public class PlayerDao {
 				}
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			System.out.println("선수 목록 조회 중 오류가 발생했습니다.");
 		}
 
 		return playerList;
@@ -77,8 +111,10 @@ public class PlayerDao {
 
 			return rowCount;
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			System.out.println("선수의 소속팀 수정 중 오류가 발생했습니다.");
 		}
+
+		return -1;
 	}
 
 	public Player selectPlayerById(int id) {
@@ -97,6 +133,7 @@ public class PlayerDao {
 		return null;
 	}
 
+<<<<<<< HEAD
 	public PositionRespDto positionList() {
 		List<String> teamList = getTeamNameList();
 		Map<Position, List<String>> positionMap = new HashMap<>();
@@ -162,6 +199,23 @@ public class PlayerDao {
 			throw new RuntimeException(e);
 		}
 		return teamList;
+=======
+	private boolean isExistTeamPosition(int teamId, Position position) throws SQLException {
+		String query = "select count(*) from player where team_id = ? and position = ?";
+
+		PreparedStatement statement = connection.prepareStatement(query);
+		statement.setInt(1, teamId);
+		statement.setString(2, position.getName());
+
+		ResultSet resultSet = statement.executeQuery();
+
+		if (resultSet.next()) {
+			if (resultSet.getInt(1) > 0)
+				return true;
+		}
+
+		return false;
+>>>>>>> b41663cb676eedfad657182463b5d0878a615165
 	}
 
 	private Player buildPlayerFromResultSet(ResultSet resultSet) throws SQLException {

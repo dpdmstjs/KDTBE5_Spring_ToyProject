@@ -9,12 +9,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import constant.Position;
+import db.DBConnection;
 import dto.OutPlayerRespDto;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class OutPlayerDao {
+	private static OutPlayerDao outPlayerDao;
 	private final Connection connection;
+
+	private OutPlayerDao() {
+		connection = DBConnection.getInstance();
+	}
+
+	public static OutPlayerDao getInstance() {
+		if (outPlayerDao == null) {
+			outPlayerDao = new OutPlayerDao();
+		}
+
+		return outPlayerDao;
+	}
 
 	public int createOutPlayer(int playerId, String reason) {
 		String sql = "insert into out_player(player_id, reason) values (?, ?)";

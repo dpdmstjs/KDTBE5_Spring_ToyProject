@@ -14,4 +14,9 @@ public class OutPlayerRespDto {
 	private Position position;
 	private String reason;
 	private Timestamp outCreatedAt;
+
+	@Override
+	public String toString() {
+		return playerId + "\t" + name + "\t" + position.getName() + "\t" + reason + "\t" + outCreatedAt + "\n";
+	}
 }
