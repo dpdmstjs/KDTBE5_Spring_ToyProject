@@ -5,6 +5,10 @@ plugins {
 group = 'com.kdtbe'
 version = '1.0-SNAPSHOT'
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add("-parameters")
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
