@@ -41,12 +41,12 @@ public class PlayerService {
 	}
 
 	public String getPlayersByTeam(int teamId) {
-		List<Player> playerList = playerDao.selectPlayersByTeam(teamId);
+		List<Player> players = playerDao.selectPlayersByTeam(teamId);
 
-		if (playerList == null || playerList.size() == 0)
+		if (players == null || players.size() == 0)
 			return null;
 
-		return listToString(playerList);
+		return buildPlayerListString(players);
 	}
 
 	public String getPositions() {
@@ -56,28 +56,28 @@ public class PlayerService {
 		return buildPositionListString(positionMap, teamList);
 	}
 
-	private String buildPositionListString(Map<Position, List<String>> positionMap, List<String> teamList) {
+	private String buildPositionListString(Map<Position, List<String>> positions, List<String> teams) {
 		StringBuilder builder = new StringBuilder();
-		System.out.printf("%-10s", "포지션");
-		for (String team : teamList) {
-			System.out.printf("%-10s", team);
+		builder.append(String.format("%-10s", "포지션"));
+		for (String team : teams) {
+			builder.append(String.format("%-10s", team));
 		}
-		System.out.println();
+		builder.append("\n");
 
-		for (Position position : positionMap.keySet()) {
+		for (Position position : positions.keySet()) {
 
-			System.out.printf("%-10s", position.getName());
-			List<String> teamPlayerList = positionMap.get(position);
-			for (String team : teamList) {
-				String playerName = teamPlayerList.get(teamList.indexOf(team));
-				System.out.printf("%-10s", playerName);
+			builder.append(String.format("%-10s", position.getName()));
+			List<String> teamPlayers = positions.get(position);
+			for (String team : teams) {
+				String playerName = teamPlayers.get(teams.indexOf(team));
+				builder.append(String.format("%-10s", playerName));
 			}
-			System.out.println();
+			builder.append("\n");
 		}
 		return builder.toString();
 	}
 
-	private String listToString(List<Player> playerList) {
+	private String buildPlayerListString(List<Player> playerList) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("==========================\n");
 		builder.append("선수명\t포지션\t등록일\n");
