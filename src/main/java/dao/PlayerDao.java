@@ -40,23 +40,26 @@ public class PlayerDao {
 		if (!teamDao.isExistTeam(teamId))
 			throw new ElementNotFoundException("해당 팀은 존재하지 않습니다.");
 
-		if (isExistTeamPosition(teamId, position)) {
-			throw new DuplicateKeyException("해당 팀에 동일한 포지션의 선수가 존재합니다.");
+		try {
+			if (isExistTeamPosition(teamId, position)) {
+				throw new DuplicateKeyException("해당 팀에 동일한 포지션의 선수가 존재합니다.");
+			}
+
+			String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
+
+			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			statement.setInt(1, teamId);
+			statement.setString(2, name);
+			statement.setString(3, position.getName());
+
+			int rowCount = statement.executeUpdate();
+
+			return rowCount;
+		} catch (SQLException e) {
+			System.out.println("선수 등록 중 오류가 발생했습니다.");
 		}
 
-		String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
-
-		PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-		statement.setInt(1, teamId);
-		statement.setString(2, name);
-		statement.setString(3, position.getName());
-
-		int rowCount = statement.executeUpdate();
-
-		if (rowCount <= 0)
-			throw new SQLException("선수등록 중 오류가 발생했습니다.");
-
-		return "성공";
+		return -1;
 	}
 
 	public List<Player> selectPlayersByTeam(int teamId) {
@@ -121,37 +124,37 @@ public class PlayerDao {
 
 		try {
 			StringBuilder builder = new StringBuilder();
-			builder.append("SELECT a.position, ");
+			builder.append("SELECT team_players.position, ");
 
-			for (String team : teamList) {
-				builder.append("MAX(IF(a.team_name = ?, a.player_name, '-')) as ");
+			for (String team : teams) {
+				builder.append("MAX(IF(team_players.team_name = ?, team_players.player_name, ' ')) AS ");
 				builder.append(team);
 				builder.append(", ");
 			}
 
 			builder.delete(builder.length() - 2, builder.length());
 			builder.append(" FROM ( ");
-			builder.append("SELECT p.name as player_name, p.position, t.name as team_name ");
+			builder.append("SELECT p.name AS player_name, p.position, t.name AS team_name ");
 			builder.append("FROM team t ");
 			builder.append("JOIN player p ON p.team_id = t.id ");
-			builder.append(") a ");
-			builder.append("GROUP BY a.position");
+			builder.append(") team_players ");
+			builder.append("GROUP BY team_players.position");
 
 			PreparedStatement statement = connection.prepareStatement(builder.toString());
 
 			int index = 1;
-			for (String team : teamList) {
+			for (String team : teams) {
 				statement.setString(index++, team);
 			}
 
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
 					Position position = Position.findByName(resultSet.getString("position"));
-					List<String> teamPlayerList = new ArrayList<>();
+					List<String> teamPlayers = new ArrayList<>();
 
-					for (String team : teamList) {
+					for (String team : teams) {
 						String teamName = resultSet.getString(team);
-						teamPlayerList.add(teamName);
+						teamPlayers.add(teamName);
 					}
 					players.put(position, teamPlayerList);
 				}

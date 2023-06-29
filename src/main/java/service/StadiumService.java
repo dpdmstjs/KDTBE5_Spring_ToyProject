@@ -17,36 +17,35 @@ public class StadiumService {
 	}
 
 	public String addStadium(String name) {
-		int result = stadiumDAO.createStadium(name);
+		int result = stadiumDAO.insertStadium(name);
 
-		if (result > 0)
-			return "성공";
-
-		return "실패";
+		if (result < 0) {
+			return "실패";
+		}
+		return "성공";
 	}
 
 	public Stadium getStadiumById(int id) {
 		Stadium stadium = stadiumDAO.selectStadiumById(id);
-
 		return stadium;
 	}
 
-	public String getStadiumList() {
-		List<Stadium> stadiumList = stadiumDAO.selectStadiumList();
+	public String getStadiums() {
+		List<Stadium> stadiums = stadiumDAO.selectStadiums();
 
-		if (stadiumList == null) {
+		if (stadiums == null) {
 			return null;
 		}
-		return listToString(stadiumList);
+		return buildStadiumListString(stadiums);
 	}
 
-	private String listToString(List<Stadium> stadiumList) {
+	private String buildStadiumListString(List<Stadium> stadiums) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("=============\n");
-		builder.append("야구장명\n");
+		builder.append("  야구장명\n");
 		builder.append("============\n");
 
-		for (Stadium stadium : stadiumList) {
+		for (Stadium stadium : stadiums) {
 			builder.append(
 				stadium.getName() + "\n");
 		}

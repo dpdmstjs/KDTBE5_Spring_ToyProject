@@ -1,7 +1,6 @@
 package service;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -26,10 +25,11 @@ public class PlayerService {
 		try {
 			String result = playerDao.insertPlayer(teamId, name, position);
 
-			return result;
-		} catch (ElementNotFoundException | DuplicateKeyException | SQLException e) {
-			return e.getMessage();
+		if (result > 0) {
+			return "성공";
 		}
+
+		return "실패";
 	}
 
 	public void getPlayer(int id) {
@@ -39,10 +39,10 @@ public class PlayerService {
 	}
 
 	public String getPlayersByTeam(int teamId) {
-		List<Player> playerList = playerDao.selectPlayersByTeam(teamId);
+		List<Player> players = playerDao.selectPlayersByTeam(teamId);
 
-		if (playerList == null || playerList.size() == 0)
-			throw new ElementNotFoundException("해당 팀에 선수가 존재하지 않습니다.");
+		if (players == null || players.size() == 0)
+			return null;
 
 		return playersByTeamToString(playerList);
 	}
@@ -56,21 +56,21 @@ public class PlayerService {
 
 	private String PlayersByPositionToString(Map<Position, List<String>> positionMap, List<String> teamList) {
 		StringBuilder builder = new StringBuilder();
-		System.out.printf("%-10s", "포지션");
-		for (String team : teamList) {
-			System.out.printf("%-10s", team);
+		builder.append(String.format("%-10s", "포지션"));
+		for (String team : teams) {
+			builder.append(String.format("%-10s", team));
 		}
-		System.out.println();
+		builder.append("\n");
 
-		for (Position position : positionMap.keySet()) {
+		for (Position position : positions.keySet()) {
 
-			System.out.printf("%-10s", position.getName());
-			List<String> teamPlayerList = positionMap.get(position);
-			for (String team : teamList) {
-				String playerName = teamPlayerList.get(teamList.indexOf(team));
-				System.out.printf("%-10s", playerName);
+			builder.append(String.format("%-10s", position.getName()));
+			List<String> teamPlayers = positions.get(position);
+			for (String team : teams) {
+				String playerName = teamPlayers.get(teams.indexOf(team));
+				builder.append(String.format("%-10s", playerName));
 			}
-			System.out.println();
+			builder.append("\n");
 		}
 		return builder.toString();
 	}
