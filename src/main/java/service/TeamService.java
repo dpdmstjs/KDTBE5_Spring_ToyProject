@@ -13,6 +13,7 @@ public class TeamService {
 	private Connection connection;
 
 	public TeamService() {
+<<<<<<< HEAD
 		this.stadiumDAO = StadiumDAO.getInstance();
 		this.teamDAO = TeamDAO.getInstance();
 		this.connection = DBConnection.getInstance();
@@ -21,6 +22,10 @@ public class TeamService {
 	public TeamService(StadiumDAO stadiumDAO, TeamDAO teamDAO, Connection connection) {
 		this.stadiumDAO = stadiumDAO;
 		this.teamDAO = teamDAO;
+=======
+		this.stadiumDAO = new StadiumDAO(DBConnection.getInstance());
+		this.teamDAO = new TeamDAO(DBConnection.getInstance());
+>>>>>>> main
 		this.connection = DBConnection.getInstance();
 	}
 

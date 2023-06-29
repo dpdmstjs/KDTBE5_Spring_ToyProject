@@ -17,6 +17,7 @@ public class TeamDAO {
 	private static TeamDAO teamDAO;
 	private final Connection connection;
 
+<<<<<<< HEAD
 	private TeamDAO() {
 		connection = DBConnection.getInstance();
 	}
@@ -34,6 +35,10 @@ public class TeamDAO {
 		}
 
 		String query = "INSERT INTO team(name, created_at) VALUES (?, ?, now())";
+=======
+	public int createTeam(int stadiumId, String name) {
+		String query = "INSERT INTO team(stadium_id, name, created_at) VALUES (?, ?, now())";
+>>>>>>> main
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setInt(1, stadiumId);
 			statement.setString(2, name);
@@ -49,11 +54,19 @@ public class TeamDAO {
 
 	public List<TeamRespDTO> selectTeamList() {
 		List<TeamRespDTO> teamList = new ArrayList<>();
+<<<<<<< HEAD
 		String query = "SELECT team.id, stadium.name, team.name " +
 			"FROM team " +
 			"JOIN stadium ON team.stadium_id = stadium.id";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			try (ResultSet resultSet = statement.executeQuery()) {
+=======
+		String query = "SELECT team.id, stadium.name AS stadium_name, team.name " +
+			"FROM team " +
+			"JOIN stadium ON team.stadium_id = stadium.id";
+		try (Statement statement = connection.createStatement()) {
+			try (ResultSet resultSet = statement.executeQuery(query)) {
+>>>>>>> main
 				while (resultSet.next()) {
 					TeamRespDTO teamRespDTO = TeamRespDTO.builder()
 						.teamId(resultSet.getInt("id"))

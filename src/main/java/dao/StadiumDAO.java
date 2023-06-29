@@ -19,6 +19,7 @@ public class StadiumDAO {
 	private static StadiumDAO stadiumDAO;
 	private final Connection connection;
 
+<<<<<<< HEAD
 	private StadiumDAO() {
 		connection = DBConnection.getInstance();
 	}
@@ -30,6 +31,8 @@ public class StadiumDAO {
 		return stadiumDAO;
 	}
 
+=======
+>>>>>>> main
 	public int createStadium(String name) {
 		String query = "INSERT INTO stadium(name, created_at) VALUES (?, now())";
 

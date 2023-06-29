@@ -2,8 +2,11 @@ package controller;
 
 import dao.StadiumDAO;
 import db.DBConnection;
+<<<<<<< HEAD
 import exception.ArgumentMismatchException;
 import exception.ElementNotFoundException;
+=======
+>>>>>>> main
 import service.StadiumService;
 import util.annotation.Controller;
 import util.annotation.RequestMapping;
@@ -25,7 +28,11 @@ public class StadiumController {
 		return stadiumService.addStadium(name);
 	}
 
+<<<<<<< HEAD
 	@RequestMapping(name = "야구장목록")
+=======
+	@RequestMapping(name = "아구장목록")
+>>>>>>> main
 	public String stadiumList() {
 		String stadiumListtoString = stadiumService.getStadiumList();
 
