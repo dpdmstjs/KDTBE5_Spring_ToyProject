@@ -71,6 +71,23 @@ public class TeamDao {
 		return teams;
 	}
 
+	public List<String> getTeamNames() {
+		List<String> teams = new ArrayList<>();
+		try {
+			String query = "SELECT name FROM team";
+			PreparedStatement statement = connection.prepareStatement(query);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					teams.add(resultSet.getString("name"));
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return teams;
+	}
+
+
 	protected boolean isExistTeam(int teamId) {
 		String query = "SELECT count(id) FROM team WHERE id = ?";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {

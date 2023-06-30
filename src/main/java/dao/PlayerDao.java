@@ -119,7 +119,7 @@ public class PlayerDao {
 	}
 
 	public PositionRespDto selectPositions() {
-		List<String> teams = getTeamNames();
+		List<String> teams = teamDao.getTeamNames();
 		Map<Position, List<String>> positions = new HashMap<>();
 
 		try {
@@ -168,21 +168,7 @@ public class PlayerDao {
 			.build();
 	}
 
-	public List<String> getTeamNames() {
-		List<String> teams = new ArrayList<>();
-		try {
-			String query = "SELECT name FROM team";
-			PreparedStatement statement = connection.prepareStatement(query);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				while (resultSet.next()) {
-					teams.add(resultSet.getString("name"));
-				}
-			}
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-		return teams;
-	}
+
 
 
 	private boolean isExistTeamPosition(int teamId, Position position) throws SQLException {
