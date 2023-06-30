@@ -73,7 +73,7 @@ public class PlayerService {
 	private String playersByTeamToString(List<Player> playerList) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("==========================\n");
-		builder.append("선수명\t포지션\t등록일\n");
+		builder.append("ID\t선수명\t포지션\t등록일\n");
 		builder.append("==========================\n");
 
 		for (Player player : playerList) {
