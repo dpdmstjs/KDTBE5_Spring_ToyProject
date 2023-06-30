@@ -61,7 +61,7 @@ public class StadiumDao {
 
 	public List<Stadium> selectStadiums() {
 		List<Stadium> stadiums = new ArrayList<>();
-		String query = "SELECT * FROM stadium";
+		String query = "SELECT * FROM stadium ORDER BY id ASC";
 		try (Statement statement = connection.createStatement()) {
 			try (ResultSet resultSet = statement.executeQuery(query)) {
 				while (resultSet.next()) {
