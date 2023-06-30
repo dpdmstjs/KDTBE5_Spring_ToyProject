@@ -41,12 +41,13 @@ public class StadiumService {
 
 	private String buildStadiumListString(List<Stadium> stadiums) {
 		StringBuilder builder = new StringBuilder();
-		builder.append("=============\n");
+		builder.append("============\n");
 		builder.append("  야구장명\n");
 		builder.append("============\n");
 
 		for (Stadium stadium : stadiums) {
 			builder.append(
+				stadium.getId() + "." + "\t" +
 				stadium.getName() + "\n");
 		}
 
