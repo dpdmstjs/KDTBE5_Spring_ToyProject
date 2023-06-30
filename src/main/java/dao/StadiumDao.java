@@ -86,12 +86,11 @@ public class StadiumDao {
 				if (resultSet.getInt(1) > 0) {
 					return true;
 				}
-
-				return false;
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return false;
 	}
 
 	private Stadium buildStadiumFromResultSet(ResultSet resultSet) throws SQLException {
