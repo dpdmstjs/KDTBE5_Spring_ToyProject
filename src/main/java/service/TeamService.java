@@ -1,6 +1,7 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import dao.StadiumDao;
 import dao.TeamDao;
@@ -24,7 +25,7 @@ public class TeamService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String addTeam(int stadiumId, String name) {
+	public String addTeam(int stadiumId, String name) throws SQLException {
 		int result = teamDAO.createTeam(stadiumId, name);
 		if (result < 0) {
 			return "실패";
