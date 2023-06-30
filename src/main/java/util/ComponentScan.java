@@ -28,96 +28,126 @@ public class ComponentScan {
 		return componentScan;
 	}
 
-	public Set<Class> scanPackage(String pkg) throws Exception {
+	private Set<Class> scanPackage(String pkg) throws Exception {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		Set<Class> classes = new HashSet<>();
 
 		URL packageUrl = classLoader.getResource(pkg);
 		File packageDirectory = new File(packageUrl.toURI());
 		for (File file : packageDirectory.listFiles()) {
-			if (file.getName().endsWith(".class")) {
-				String className = pkg + "." + file.getName().replace(".class", "");
-				Class cls = Class.forName(className);
-				classes.add(cls);
-			}
+			if (!file.getName().endsWith(".class"))
+				continue;
+
+			String className = pkg + "." + file.getName().replace(".class", "");
+			Class cls = Class.forName(className);
+			classes.add(cls);
 		}
 		return classes;
 	}
 
-	//@TODO: Depth 너무 깊음
-	public String findUri(Set<Class> classes, MethodInfo methodInfo) throws Exception {
-		boolean isFind = false;
-		for (Class cls : classes) {
-			if (cls.isAnnotationPresent(Controller.class)) {
+	public String invokeMethod(MethodInfo methodInfo) {
+		try {
+			Set<Class> classes = scanPackage("controller");
+
+			for (Class cls : classes) {
+				if (!cls.isAnnotationPresent(Controller.class))
+					continue;
+
 				Object instance = cls.newInstance();
 				Method[] methods = cls.getDeclaredMethods();
 
-				for (Method method : methods) {
-					Annotation annotation = method.getDeclaredAnnotation(RequestMapping.class);
-					RequestMapping requestMapping = (RequestMapping)annotation;
+				Method method = findMethod(instance, methods, methodInfo);
 
-					if (requestMapping == null)
-						continue;
+				if (method == null)
+					continue;
 
-					if (requestMapping.name().equals(methodInfo.getName())) {
-						isFind = true;
-						method.setAccessible(true);
+				method.setAccessible(true);
 
-						try {
-							if (method.getParameterTypes().length == 0) {
-								String response = (String)method.invoke(instance);
+				if (method.getParameterTypes().length == 0) {
+					String response = (String)method.invoke(instance);
 
-								return response;
-							}
-
-							if (!isMatchParameters(method.getParameters(), methodInfo.getParameterMap())) {
-								throw new ArgumentMismatchException("입력 값을 확인해주세요.");
-							}
-
-							Class<?>[] parameterTypes = method.getParameterTypes();
-							Object[] arg = new Object[parameterTypes.length];
-							Object[] inputArgs = methodInfo.getParameterMap().values().toArray();
-							for (int i = 0; i < parameterTypes.length; i++) {
-								arg[i] = convertArgumentType(inputArgs[i], parameterTypes[i]);
-							}
-
-							String response = (String)method.invoke(instance, arg);
-
-							return response;
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-
-						break;
-					}
+					return response;
 				}
+
+				Object[] arguments = createMethodArguments(method, methodInfo);
+
+				String response = (String)method.invoke(instance, arguments);
+
+				return response;
 			}
+
+			return null;
+		} catch (ArgumentMismatchException e) {
+			return e.getMessage();
+		} catch (Exception e) {
+			return "실행 중 오류가 발생했습니다.";
+		}
+	}
+
+	private Method findMethod(Object instance, Method[] methods, MethodInfo methodInfo) {
+		for (Method method : methods) {
+			if (!isEquals(method, methodInfo.getName()))
+				continue;
+
+			return method;
 		}
 
 		return null;
 	}
 
-	private Object convertArgumentType(Object arg, Class<?> targetType) {
-		// 타입에 따라 적절한 변환 로직을 구현한다
+	private boolean isEquals(Method method, String methodName) {
+		Annotation annotation = method.getDeclaredAnnotation(RequestMapping.class);
+		RequestMapping requestMapping = (RequestMapping)annotation;
+
+		if (requestMapping == null || !requestMapping.name().equals(methodName))
+			return false;
+
+		return true;
+	}
+
+	private Object convertParameterType(Object arg, Class<?> targetType) {
+		if (arg.toString().equals(" "))
+			throw new ArgumentMismatchException("공백을 입력할 수 없습니다.");
+		
 		if (targetType.equals(int.class) || targetType.equals(Integer.class)) {
 			return Integer.parseInt(arg.toString());
-		} else if (targetType.equals(String.class)) {
-			return arg.toString();
-		} else if (targetType.equals(boolean.class) || targetType.equals(Boolean.class)) {
-			return Boolean.parseBoolean(arg.toString());
 		}
-		// 추가적인 타입 변환 로직을 구현한다
+
+		if (targetType.equals(String.class)) {
+			return arg.toString();
+		}
 
 		return arg;
 	}
 
-	private boolean isMatchParameters(Parameter[] parameters, Map<String, Object> inputParameters) {
-		for (Parameter parameter : parameters) {
-			if (!inputParameters.containsKey(parameter.getName())) {
-				return false;
+	private Object[] convertParameterMaptoArray(Parameter[] parameters, Map<String, Object> inputParameters) {
+		if (parameters.length != inputParameters.size())
+			throw new ArgumentMismatchException("입력 값을 확인해주세요.");
+
+		Object[] returnArray = new Object[parameters.length];
+
+		for (int i = 0; i < returnArray.length; i++) {
+			if (!inputParameters.containsKey(parameters[i].getName())) {
+				throw new ArgumentMismatchException("입력 값을 확인해주세요.");
 			}
+
+			returnArray[i] = inputParameters.get(parameters[i].getName());
 		}
 
-		return true;
+		return returnArray;
+	}
+
+	//입력받은 파라미터를 실제 호출될 메서드의 파라미터 순서로 정렬 및 Object[] 타입으로 변환
+	private Object[] createMethodArguments(Method method, MethodInfo methodInfo) throws ArgumentMismatchException {
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		Object[] arg = new Object[parameterTypes.length];
+		Object[] inputArgs = convertParameterMaptoArray(method.getParameters(),
+			methodInfo.getParameterMap());
+
+		for (int i = 0; i < parameterTypes.length; i++) {
+			arg[i] = convertParameterType(inputArgs[i], parameterTypes[i]);
+		}
+
+		return arg;
 	}
 }

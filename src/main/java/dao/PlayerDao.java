@@ -15,8 +15,8 @@ import java.util.Map;
 import constant.Position;
 import db.DBConnection;
 import dto.PositionRespDto;
-import exception.ElementNotFoundException;
 import exception.DuplicateKeyException;
+import exception.ElementNotFoundException;
 import model.Player;
 
 public class PlayerDao {
@@ -36,30 +36,27 @@ public class PlayerDao {
 
 	private TeamDao teamDao = new TeamDao(DBConnection.getInstance());
 
-	public int createPlayer(int teamId, String name, Position position) {
+	public int insertPlayer(int teamId, String name, Position position) throws SQLException {
 		if (!teamDao.isExistTeam(teamId))
 			throw new ElementNotFoundException("해당 팀은 존재하지 않습니다.");
 
-		try {
-			if (isExistTeamPosition(teamId, position)) {
-				throw new DuplicateKeyException("해당 팀에 동일한 포지션의 선수가 존재합니다.");
-			}
-
-			String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
-
-			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			statement.setInt(1, teamId);
-			statement.setString(2, name);
-			statement.setString(3, position.getName());
-
-			int rowCount = statement.executeUpdate();
-
-			return rowCount;
-		} catch (SQLException e) {
-			System.out.println("선수 등록 중 오류가 발생했습니다.");
+		if (isExistTeamPosition(teamId, position)) {
+			throw new DuplicateKeyException("해당 팀에 동일한 포지션의 선수가 존재합니다.");
 		}
 
-		return -1;
+		String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
+
+		PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		statement.setInt(1, teamId);
+		statement.setString(2, name);
+		statement.setString(3, position.getName());
+
+		int rowCount = statement.executeUpdate();
+
+		if (rowCount <= 0)
+			throw new SQLException("선수등록 중 오류가 발생했습니다.");
+
+		return rowCount;
 	}
 
 	public List<Player> selectPlayersByTeam(int teamId) {
@@ -156,20 +153,33 @@ public class PlayerDao {
 						String teamName = resultSet.getString(team);
 						teamPlayers.add(teamName);
 					}
-					positions.put(position, teamPlayers);
+					players.put(position, teams);
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return PositionRespDto.builder()
-			.positions(positions)
+			.positions(players)
 			.teams(teams)
 			.build();
 	}
 
-
-
+	public List<String> selectTeams() {
+		List<String> teams = new ArrayList<>();
+		try {
+			String query = "SELECT name FROM team";
+			PreparedStatement statement = connection.prepareStatement(query);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					teams.add(resultSet.getString("name"));
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return teams;
+	}
 
 	private boolean isExistTeamPosition(int teamId, Position position) throws SQLException {
 		String query = "select count(*) from player where team_id = ? and position = ?";

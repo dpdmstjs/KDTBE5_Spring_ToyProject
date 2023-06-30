@@ -1,6 +1,7 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -19,19 +20,15 @@ public class PlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public PlayerService(PlayerDao playerDao) {
-		this.playerDao = playerDao;
-		this.connection = DBConnection.getInstance();
-	}
+	public String addPlayer(Integer teamId, String name, Position position) {
+		try {
+			int result = playerDao.insertPlayer(teamId, name, position);
 
-	public String createPlayer(Integer teamId, String name, Position position) {
-		int result = playerDao.createPlayer(teamId, name, position);
-
-		if (result > 0) {
 			return "성공";
-		}
 
-		return "실패";
+		} catch (SQLException e) {
+			return e.getMessage();
+		}
 	}
 
 	public void getPlayer(int id) {
@@ -46,17 +43,17 @@ public class PlayerService {
 		if (players == null || players.size() == 0)
 			return null;
 
-		return buildPlayerListString(players);
+		return playersByTeamToString(players);
 	}
 
-	public String getPositions() {
-		PositionRespDto positionRespDto = playerDao.selectPositions();
+	public String getPlayersByPosition() {
+		PositionRespDto positionRespDto = playerDao.selectPlayersByPosition();
 		Map<Position, List<String>> positionMap = positionRespDto.getPositions();
 		List<String> teamList = positionRespDto.getTeams();
-		return buildPositionListString(positionMap, teamList);
+		return PlayersByPositionToString(positionMap, teamList);
 	}
 
-	private String buildPositionListString(Map<Position, List<String>> positions, List<String> teams) {
+	private String PlayersByPositionToString(Map<Position, List<String>> positions, List<String> teams) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format("%-10s", "포지션"));
 		for (String team : teams) {
@@ -77,7 +74,7 @@ public class PlayerService {
 		return builder.toString();
 	}
 
-	private String buildPlayerListString(List<Player> playerList) {
+	private String playersByTeamToString(List<Player> playerList) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("==========================\n");
 		builder.append("선수명\t포지션\t등록일\n");
@@ -85,7 +82,7 @@ public class PlayerService {
 
 		for (Player player : playerList) {
 			builder.append(
-				player.getName() + "\t" + player.getPosition().getName() + "\t" + player.getCreatedAt() + "\n");
+				player);
 		}
 		return builder.toString();
 	}
