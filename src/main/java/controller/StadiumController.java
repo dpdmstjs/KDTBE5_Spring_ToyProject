@@ -20,14 +20,14 @@ public class StadiumController {
 	public String createStadium(String name) {
 
 		if (name.equals(null) || name.isEmpty()) {
-			throw new ArgumentMismatchException("입력 값을 확인해주세요.");
+			throw new ArgumentMismatchException();
 		}
 
 		return stadiumService.addStadium(name);
 	}
 
 	@RequestMapping(name = "야구장목록")
-	public String stadiums() {
+	public String getStadiums() {
 		String formattedStadiums = stadiumService.getStadiums();
 
 		if (formattedStadiums == null) {
