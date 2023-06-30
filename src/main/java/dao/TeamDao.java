@@ -9,6 +9,8 @@ import java.util.List;
 
 import db.DBConnection;
 import dto.TeamRespDto;
+import exception.DuplicateKeyException;
+import exception.ElementNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -31,7 +33,11 @@ public class TeamDao {
 
 	public int createTeam(int stadiumId, String name) {
 		if (!stadiumDao.isExistStadiumId(stadiumId)) {
-			throw new IllegalArgumentException("없는 경기장 입니다.");
+			throw new ElementNotFoundException("경기장이 존재하지 않습니다.");
+		}
+
+		if (!isExistTeamName(name)) {
+			throw new DuplicateKeyException("해당 팀이 있습니다.");
 		}
 
 		String query = "INSERT INTO team(stadium_id, name, created_at) VALUES (?, ?, now())";
@@ -71,11 +77,12 @@ public class TeamDao {
 		return teams;
 	}
 
+
 	public List<String> getTeamNames() {
 		List<String> teams = new ArrayList<>();
-		try {
-			String query = "SELECT name FROM team";
-			PreparedStatement statement = connection.prepareStatement(query);
+
+		String query = "SELECT name FROM team";
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
 					teams.add(resultSet.getString("name"));
@@ -87,6 +94,23 @@ public class TeamDao {
 		return teams;
 	}
 
+	private boolean isExistTeamName(String name) {
+		String query = "SELECT name FROM team WHERE name = ?";
+		try(PreparedStatement statement = connection.prepareStatement(query)) {
+
+			statement.setString(1, name);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				resultSet.next();
+
+				if (resultSet.getString("name").isEmpty()) {
+					return true;
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return false;
+	}
 
 	protected boolean isExistTeam(int teamId) {
 		String query = "SELECT count(id) FROM team WHERE id = ?";
@@ -99,11 +123,11 @@ public class TeamDao {
 				if (resultSet.getInt(1) > 0) {
 					return true;
 				}
-				return false;
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return false;
 	}
 
 }
