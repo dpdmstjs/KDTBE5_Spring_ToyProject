@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import constant.ExceptionMessage;
 import constant.Position;
 import db.DBConnection;
 import dto.PositionRespDto;
@@ -38,11 +39,10 @@ public class PlayerDao {
 
 	public int insertPlayer(int teamId, String name, Position position) throws SQLException {
 		if (!teamDao.isExistTeam(teamId))
-			throw new ElementNotFoundException("해당 팀은 존재하지 않습니다.");
+			throw new ElementNotFoundException(ExceptionMessage.ERR_MSG_TEAM_NOT_FOUND.getMessage());
 
-		if (isExistTeamPosition(teamId, position)) {
-			throw new DuplicateKeyException("해당 팀에 동일한 포지션의 선수가 존재합니다.");
-		}
+		if (isExistTeamPosition(teamId, position))
+			throw new DuplicateKeyException(ExceptionMessage.ERR_MSG_POSTION_DUPLICATED.getMessage());
 
 		String sql = "insert into player(team_id, name, position) values (?, ?, ?)";
 
@@ -53,63 +53,48 @@ public class PlayerDao {
 
 		int rowCount = statement.executeUpdate();
 
-		if (rowCount <= 0)
-			throw new SQLException("선수등록 중 오류가 발생했습니다.");
-
 		return rowCount;
 	}
 
-	public List<Player> selectPlayersByTeam(int teamId) {
+	public List<Player> selectPlayersByTeam(int teamId) throws SQLException {
 		List<Player> players = new ArrayList<>();
 
 		String sql = "select * from player where team_id = ?";
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setInt(1, teamId);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				while (resultSet.next()) {
-					Player player = buildPlayerFromResultSet(resultSet);
-					players.add(player);
-				}
-			}
-		} catch (SQLException e) {
-			System.out.println("선수 목록 조회 중 오류가 발생했습니다.");
+		PreparedStatement statement = connection.prepareStatement(sql);
+		statement.setInt(1, teamId);
+		ResultSet resultSet = statement.executeQuery();
+		while (resultSet.next()) {
+			Player player = buildPlayerFromResultSet(resultSet);
+			players.add(player);
 		}
 
 		return players;
 	}
 
-	public int updatePlayerTeamId(int id, int teamId) {
+	public int updatePlayerTeamId(int id, int teamId) throws SQLException {
 		String sql = "update player set team_id = ? where id = ?";
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			if (teamId == 0) {
-				statement.setNull(1, Types.INTEGER);
-			} else {
-				statement.setInt(1, teamId);
-			}
-
-			statement.setInt(2, id);
-
-			int rowCount = statement.executeUpdate();
-
-			return rowCount;
-		} catch (SQLException e) {
-			System.out.println("선수의 소속팀 수정 중 오류가 발생했습니다.");
+		PreparedStatement statement = connection.prepareStatement(sql);
+		if (teamId == 0) {
+			statement.setNull(1, Types.INTEGER);
+		} else {
+			statement.setInt(1, teamId);
 		}
 
-		return -1;
+		statement.setInt(2, id);
+
+		int rowCount = statement.executeUpdate();
+
+		return rowCount;
 	}
 
-	public Player selectPlayerById(int id) {
+	public Player selectPlayerById(int id) throws SQLException {
 		String sql = "select * from player where id = ?";
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setInt(1, id);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				if (resultSet.next()) {
-					return buildPlayerFromResultSet(resultSet);
-				}
+		PreparedStatement statement = connection.prepareStatement(sql);
+		statement.setInt(1, id);
+		try (ResultSet resultSet = statement.executeQuery()) {
+			if (resultSet.next()) {
+				return buildPlayerFromResultSet(resultSet);
 			}
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
 		}
 
 		return null;

@@ -28,44 +28,37 @@ public class OutPlayerDao {
 		return outPlayerDao;
 	}
 
-	public int insertOutPlayer(int playerId, String reason) {
+	public int insertOutPlayer(int playerId, String reason) throws SQLException {
 		String sql = "insert into out_player(player_id, reason) values (?, ?)";
 
-		try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-			statement.setInt(1, playerId);
-			statement.setString(2, reason);
+		PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		statement.setInt(1, playerId);
+		statement.setString(2, reason);
 
-			int rowCount = statement.executeUpdate();
+		int rowCount = statement.executeUpdate();
 
-			return rowCount;
-
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		return rowCount;
 	}
 
-	public List<OutPlayerRespDto> selectOutPlayers() {
+	public List<OutPlayerRespDto> selectOutPlayers() throws SQLException {
 		List<OutPlayerRespDto> outPlayers = new ArrayList<>();
 
 		String sql = "select p.id, p.name, p.position, o.reason, o.created_at" +
 			" from out_player o left outer join player p on o.player_id = p.id";
 
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			try (ResultSet resultSet = statement.executeQuery()) {
-				while (resultSet.next()) {
-					OutPlayerRespDto outPlayerRespDto = OutPlayerRespDto.builder()
-						.playerId(resultSet.getInt("id"))
-						.name(resultSet.getString("name"))
-						.position(Position.findByName(resultSet.getString("position")))
-						.reason(resultSet.getString("reason"))
-						.outCreatedAt(resultSet.getTimestamp("created_at"))
-						.build();
+		PreparedStatement statement = connection.prepareStatement(sql);
+		ResultSet resultSet = statement.executeQuery();
 
-					outPlayers.add(outPlayerRespDto);
-				}
-			}
-		} catch (SQLException e) {
-			System.out.println("퇴출선수 목록 조회 중 오류가 발생했습니다.");
+		while (resultSet.next()) {
+			OutPlayerRespDto outPlayerRespDto = OutPlayerRespDto.builder()
+				.playerId(resultSet.getInt("id"))
+				.name(resultSet.getString("name"))
+				.position(Position.findByName(resultSet.getString("position")))
+				.reason(resultSet.getString("reason"))
+				.outCreatedAt(resultSet.getTimestamp("created_at"))
+				.build();
+
+			outPlayers.add(outPlayerRespDto);
 		}
 
 		return outPlayers;

@@ -1,5 +1,8 @@
 package controller;
 
+import java.sql.SQLException;
+
+import constant.ExceptionMessage;
 import exception.ElementNotFoundException;
 import service.OutPlayerService;
 import util.annotation.Controller;
@@ -21,6 +24,8 @@ public class OutPlayerController {
 			return formattedOutPlayers;
 		} catch (ElementNotFoundException e) {
 			return e.getMessage();
+		} catch (SQLException e) {
+			return ExceptionMessage.ERR_MSG_SQL.getMessage();
 		}
 	}
 
@@ -30,6 +35,8 @@ public class OutPlayerController {
 			return outPlayerService.addOutPlayer(playerId, reason);
 		} catch (ElementNotFoundException e) {
 			return e.getMessage();
+		} catch (SQLException e) {
+			return ExceptionMessage.ERR_MSG_SQL.getMessage();
 		}
 	}
 }

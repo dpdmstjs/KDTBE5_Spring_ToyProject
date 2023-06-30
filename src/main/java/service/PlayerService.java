@@ -5,10 +5,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import constant.ExceptionMessage;
 import constant.Position;
 import dao.PlayerDao;
 import db.DBConnection;
 import dto.PositionRespDto;
+import exception.ElementNotFoundException;
 import model.Player;
 
 public class PlayerService {
@@ -20,28 +22,20 @@ public class PlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String addPlayer(Integer teamId, String name, Position position) {
-		try {
-			int result = playerDao.insertPlayer(teamId, name, position);
+	public String addPlayer(Integer teamId, String name, Position position) throws SQLException {
+		int result = playerDao.insertPlayer(teamId, name, position);
 
-			return "성공";
+		if (result <= 0)
+			throw new SQLException();
 
-		} catch (SQLException e) {
-			return e.getMessage();
-		}
+		return "성공";
 	}
 
-	public void getPlayer(int id) {
-		Player player = playerDao.selectPlayerById(id);
-
-		System.out.println(player);
-	}
-
-	public String getPlayersByTeam(int teamId) {
+	public String getPlayersByTeam(int teamId) throws SQLException {
 		List<Player> players = playerDao.selectPlayersByTeam(teamId);
 
 		if (players == null || players.size() == 0)
-			return null;
+			throw new ElementNotFoundException(ExceptionMessage.ERR_MSG_PLAYERS_NOT_FOUND.getMessage());
 
 		return playersByTeamToString(players);
 	}
