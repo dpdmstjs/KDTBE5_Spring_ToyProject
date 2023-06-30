@@ -153,14 +153,14 @@ public class PlayerDao {
 						String teamName = resultSet.getString(team);
 						teamPlayers.add(teamName);
 					}
-					players.put(position, teams);
+					positions.put(position, teams);
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return PositionRespDto.builder()
-			.positions(players)
+			.positions(positions)
 			.teams(teams)
 			.build();
 	}
