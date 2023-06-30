@@ -115,9 +115,9 @@ public class PlayerDao {
 		return null;
 	}
 
-	public PositionRespDto selectPlayersByPosition() {
-		List<String> teams = selectTeams();
-		Map<Position, List<String>> players = new HashMap<>();
+	public PositionRespDto selectPositions() {
+		List<String> teams = teamDao.getTeamNames();
+		Map<Position, List<String>> positions = new HashMap<>();
 
 		try {
 			StringBuilder builder = new StringBuilder();
