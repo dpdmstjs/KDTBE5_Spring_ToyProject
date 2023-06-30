@@ -42,9 +42,9 @@ public class TeamService {
 
 	private String buildTeamListString(List<TeamRespDto> teams) {
 		StringBuilder builder = new StringBuilder();
-		builder.append("=============\n");
-		builder.append("   팀 목록  \n");
-		builder.append("=============\n");
+		builder.append("================================\n");
+		builder.append("\t\t\t" + "팀 목록  \n");
+		builder.append("================================\n");
 
 		for (TeamRespDto teamRespDTO : teams) {
 			builder.append(teamRespDTO.getTeamId() + "\t" +
