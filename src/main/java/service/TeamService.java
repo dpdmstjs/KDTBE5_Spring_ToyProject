@@ -1,6 +1,7 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import dao.StadiumDao;
 import dao.TeamDao;
@@ -24,7 +25,7 @@ public class TeamService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String addTeam(int stadiumId, String name) {
+	public String addTeam(int stadiumId, String name) throws SQLException {
 		int result = teamDAO.createTeam(stadiumId, name);
 		if (result < 0) {
 			return "실패";
@@ -42,9 +43,9 @@ public class TeamService {
 
 	private String buildTeamListString(List<TeamRespDto> teams) {
 		StringBuilder builder = new StringBuilder();
-		builder.append("=============\n");
-		builder.append("   팀 목록  \n");
-		builder.append("=============\n");
+		builder.append("================================\n");
+		builder.append("\t\t\t" + "팀 목록  \n");
+		builder.append("================================\n");
 
 		for (TeamRespDto teamRespDTO : teams) {
 			builder.append(teamRespDTO.getTeamId() + "\t" +

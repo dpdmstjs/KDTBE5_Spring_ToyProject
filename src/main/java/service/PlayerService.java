@@ -49,11 +49,13 @@ public class PlayerService {
 
 	private String PlayersByPositionToString(Map<Position, List<String>> positions, List<String> teams) {
 		StringBuilder builder = new StringBuilder();
+		builder.append("=============================================\n");
 		builder.append(String.format("%-10s", "포지션"));
 		for (String team : teams) {
 			builder.append(String.format("%-10s", team));
 		}
 		builder.append("\n");
+		builder.append("=============================================\n");
 
 		for (Position position : positions.keySet()) {
 
