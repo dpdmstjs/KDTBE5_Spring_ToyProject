@@ -47,7 +47,7 @@ public class PlayerService {
 	}
 
 	public String getPlayersByPosition() {
-		PositionRespDto positionRespDto = playerDao.selectPlayersByPosition();
+		PositionRespDto positionRespDto = playerDao.selectPositions();
 		Map<Position, List<String>> positionMap = positionRespDto.getPositions();
 		List<String> teamList = positionRespDto.getTeams();
 		return PlayersByPositionToString(positionMap, teamList);
