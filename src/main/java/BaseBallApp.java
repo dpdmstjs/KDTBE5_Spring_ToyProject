@@ -1,3 +1,4 @@
+import exception.ArgumentMismatchException;
 import util.ComponentScan;
 import util.MethodInfo;
 import util.MyScanner;
@@ -15,10 +16,14 @@ public class BaseBallApp {
 			if (request.equals("종료"))
 				break;
 
-			MethodInfo methodInfo = scanner.parseData(request);
-			String response = componentScan.invokeMethod(methodInfo);
+			try {
+				MethodInfo methodInfo = scanner.parseData(request);
+				String response = componentScan.invokeMethod(methodInfo);
 
-			System.out.println(response);
+				System.out.println(response);
+			} catch (ArgumentMismatchException e) {
+				System.out.println(e.getMessage());
+			}
 		}
 
 	}

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import exception.ArgumentMismatchException;
+
 public class MyScanner {
 
 	public String getRequest() {
@@ -40,9 +42,7 @@ public class MyScanner {
 
 			return methodInfo;
 		} catch (Exception e) {
-			System.out.println("입력 값을 확인해주세요.");
+			throw new ArgumentMismatchException();
 		}
-
-		return null;
 	}
 }
