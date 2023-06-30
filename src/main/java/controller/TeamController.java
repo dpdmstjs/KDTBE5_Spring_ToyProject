@@ -29,7 +29,7 @@ public class TeamController {
 			String formattedTeams = teamService.getTeams();
 			return formattedTeams;
 		} catch (ElementNotFoundException e) {
-			return e.getMessage(ExceptionMessage.ERR_MSG_TEAM_NOT_FOUND);
+			return ExceptionMessage.ERR_MSG_TEAM_NOT_FOUND.getMessage();
 		}
 
 	}

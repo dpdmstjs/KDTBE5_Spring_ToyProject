@@ -34,7 +34,7 @@ public class StadiumController {
 
 			return formattedStadiums;
 		} catch (ElementNotFoundException e) {
-			return e.getMessage(ExceptionMessage.ERR_MSG_STADIUMS_NOT_FOUND);
+			return ExceptionMessage.ERR_MSG_STADIUMS_NOT_FOUND.getMessage();
 		}
 	}
 

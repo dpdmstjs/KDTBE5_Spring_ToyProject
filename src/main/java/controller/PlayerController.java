@@ -53,7 +53,7 @@ public class PlayerController {
 
 			return formattedPlayersByPosition;
 		} catch (ElementNotFoundException e) {
-			return e.getMessage(ExceptionMessage.ERR_MSG_POSITIONS_NOT_FOUND);
+			return ExceptionMessage.ERR_MSG_POSITIONS_NOT_FOUND.getMessage();
 		}
 	}
 }
