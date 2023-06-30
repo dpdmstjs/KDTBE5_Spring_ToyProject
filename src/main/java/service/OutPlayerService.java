@@ -52,7 +52,7 @@ public class OutPlayerService {
 	private String outPlayersToString(List<OutPlayerRespDto> outPlayers) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("=============================================\n");
-		builder.append("순번\t선수명\t포지션\t이유\t퇴출일\n");
+		builder.append("ID\t선수명\t포지션\t이유\t퇴출일\n");
 		builder.append("=============================================\n");
 
 		for (OutPlayerRespDto outPlayer : outPlayers) {

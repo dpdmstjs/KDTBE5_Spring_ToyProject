@@ -22,6 +22,9 @@ public class OutPlayerRespDto {
 	}
 
 	private String formattedTimestamp(Timestamp timestamp) {
+		if (timestamp == null)
+			return "";
+
 		return timestamp.toString().split(" ")[0];
 	}
 }
