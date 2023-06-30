@@ -1,5 +1,6 @@
 package controller;
 
+import constant.ExceptionMessage;
 import dao.StadiumDao;
 import db.DBConnection;
 import exception.ArgumentMismatchException;
@@ -20,21 +21,21 @@ public class StadiumController {
 	public String createStadium(String name) {
 
 		if (name.equals(null) || name.isEmpty()) {
-			throw new ArgumentMismatchException("입력 값을 확인해주세요.");
+			throw new ArgumentMismatchException();
 		}
 
 		return stadiumService.addStadium(name);
 	}
 
 	@RequestMapping(name = "야구장목록")
-	public String stadiums() {
-		String formattedStadiums = stadiumService.getStadiums();
+	public String getStadiums() {
+		try {
+			String formattedStadiums = stadiumService.getStadiums();
 
-		if (formattedStadiums == null) {
-			throw new ElementNotFoundException("등록된 야구장이 없습니다.");
+			return formattedStadiums;
+		} catch (ElementNotFoundException e) {
+			return e.getMessage(ExceptionMessage.ERR_MSG_STADIUMS_NOT_FOUND);
 		}
-
-		return formattedStadiums;
 	}
 
 

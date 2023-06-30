@@ -1,5 +1,6 @@
 package controller;
 
+import constant.ExceptionMessage;
 import constant.Position;
 import exception.ArgumentMismatchException;
 import exception.DuplicateKeyException;
@@ -41,11 +42,12 @@ public class PlayerController {
 
 	@RequestMapping(name = "포지션별목록")
 	public String getPlayersByPosition() {
-		String formattedPlayers = playerService.getPlayersByPosition();
+		try {
+			String formattedPlayersByPosition = playerService.getPlayersByPosition();
 
-		if (formattedPlayers == null) {
-			throw new ElementNotFoundException("포지션별 조회 목록이 없습니다.");
+			return formattedPlayersByPosition;
+		} catch (ElementNotFoundException e) {
+			return e.getMessage(ExceptionMessage.ERR_MSG_POSITIONS_NOT_FOUND);
 		}
-		return formattedPlayers;
 	}
 }

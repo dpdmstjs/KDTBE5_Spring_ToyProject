@@ -1,5 +1,6 @@
 package controller;
 
+import constant.ExceptionMessage;
 import exception.ArgumentMismatchException;
 import exception.ElementNotFoundException;
 import service.TeamService;
@@ -14,21 +15,22 @@ public class TeamController {
 		this.teamService = new TeamService();
 	}
 
-	@RequestMapping(name="팀등록")
+	@RequestMapping(name = "팀등록")
 	public String createTeam(int stadiumId, String name) {
 		if (stadiumId <= 0 || name.equals(null) || name.isEmpty()) {
-			throw new ArgumentMismatchException("입력 값을 확인해주세요.");
+			throw new ArgumentMismatchException();
 		}
 		return teamService.addTeam(stadiumId, name);
 	}
 
-	@RequestMapping(name="팀목록")
+	@RequestMapping(name = "팀목록")
 	public String teams() {
-		String formattedTeams = teamService.getTeams();
+		try {
+			String formattedTeams = teamService.getTeams();
+			return formattedTeams;
+		} catch (ElementNotFoundException e) {
+			return e.getMessage(ExceptionMessage.ERR_MSG_TEAM_NOT_FOUND);
+		}
 
-		if (formattedTeams == null)
-			throw new ElementNotFoundException("등록된 야구장이 없습니다.");
-
-		return formattedTeams ;
 	}
 }
