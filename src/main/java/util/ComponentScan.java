@@ -4,12 +4,14 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import exception.ArgumentMismatchException;
+import exception.MethodNotFoundException;
 import util.annotation.Controller;
 import util.annotation.RequestMapping;
 
@@ -28,7 +30,7 @@ public class ComponentScan {
 		return componentScan;
 	}
 
-	private Set<Class> scanPackage(String pkg) throws Exception {
+	private Set<Class> scanPackage(String pkg) throws URISyntaxException, ClassNotFoundException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		Set<Class> classes = new HashSet<>();
 
@@ -76,11 +78,11 @@ public class ComponentScan {
 				return response;
 			}
 
-			return null;
-		} catch (ArgumentMismatchException e) {
+			throw new MethodNotFoundException("명령을 찾지 못했습니다.");
+		} catch (ArgumentMismatchException | MethodNotFoundException e) {
 			return e.getMessage();
 		} catch (Exception e) {
-			return "실행 중 오류가 발생했습니다.";
+			return "명령 실행 중 오류가 발생했습니다.";
 		}
 	}
 
@@ -108,7 +110,7 @@ public class ComponentScan {
 	private Object convertParameterType(Object arg, Class<?> targetType) {
 		if (arg.toString().equals(" "))
 			throw new ArgumentMismatchException("공백을 입력할 수 없습니다.");
-		
+
 		if (targetType.equals(int.class) || targetType.equals(Integer.class)) {
 			return Integer.parseInt(arg.toString());
 		}

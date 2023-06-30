@@ -5,7 +5,7 @@ import util.MyScanner;
 public class BaseBallApp {
 
 	//@TODO: 별도 App 클래스 만들어서 메인 메서드에서는 App.run(); 방식으로 구조 변경
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 
 		MyScanner scanner = new MyScanner();
 		ComponentScan componentScan = ComponentScan.getInstance();

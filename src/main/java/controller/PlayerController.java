@@ -2,6 +2,7 @@ package controller;
 
 import constant.Position;
 import exception.ArgumentMismatchException;
+import exception.DuplicateKeyException;
 import exception.ElementNotFoundException;
 import service.PlayerService;
 import util.annotation.Controller;
@@ -33,7 +34,7 @@ public class PlayerController {
 
 		try {
 			return playerService.addPlayer(teamId, name, Position.findByName(position));
-		} catch (ElementNotFoundException e) {
+		} catch (ElementNotFoundException | DuplicateKeyException e) {
 			return e.getMessage();
 		}
 	}
