@@ -1,5 +1,7 @@
 package controller;
 
+import java.sql.SQLException;
+
 import constant.ExceptionMessage;
 import constant.Position;
 import exception.ArgumentMismatchException;
@@ -25,18 +27,22 @@ public class PlayerController {
 			return formattedPlayers;
 		} catch (ElementNotFoundException e) {
 			return e.getMessage();
+		} catch (SQLException e) {
+			return ExceptionMessage.ERR_MSG_SQL.getMessage();
 		}
 	}
 
 	@RequestMapping(name = "선수등록")
 	public String createPlayer(int teamId, String name, String position) {
 		if (teamId <= 0 || name.equals(null) || name.isEmpty() || position.equals(null) || position.isEmpty())
-			throw new ArgumentMismatchException("입력 값을 확인해주세요.");
+			throw new ArgumentMismatchException();
 
 		try {
 			return playerService.addPlayer(teamId, name, Position.findByName(position));
 		} catch (ElementNotFoundException | DuplicateKeyException e) {
 			return e.getMessage();
+		} catch (SQLException e) {
+			return ExceptionMessage.ERR_MSG_SQL.getMessage();
 		}
 	}
 

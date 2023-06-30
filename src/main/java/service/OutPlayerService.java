@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import constant.ExceptionMessage;
 import dao.OutPlayerDao;
 import dao.PlayerDao;
 import db.DBConnection;
@@ -21,34 +22,29 @@ public class OutPlayerService {
 		this.connection = DBConnection.getInstance();
 	}
 
-	public String addOutPlayer(int playerId, String reason) {
-		try {
-			if (playerDao.selectPlayerById(playerId) == null)
-				throw new ElementNotFoundException("입력하신 ID에 해당하는 선수가 존재하지 않습니다.");
+	public String addOutPlayer(int playerId, String reason) throws SQLException {
+		if (playerDao.selectPlayerById(playerId) == null)
+			throw new ElementNotFoundException(ExceptionMessage.ERR_MSG_PLAYER_NOT_FOUND.getMessage());
 
-			connection.setAutoCommit(false);
+		connection.setAutoCommit(false);
 
-			int outPlayerResult = outPlayerDao.insertOutPlayer(playerId, reason);
-			int playerResult = playerDao.updatePlayerTeamId(playerId, 0);
+		int outPlayerResult = outPlayerDao.insertOutPlayer(playerId, reason);
+		int playerResult = playerDao.updatePlayerTeamId(playerId, 0);
 
-			if (outPlayerResult < 1 || playerResult < 1) {
-				connection.rollback();
-				throw new SQLException("퇴출등록 중 오류가 발생했습니다. 다시 시도해주세요.");
-			}
-
-			connection.commit();
-			return "성공";
-
-		} catch (SQLException e) {
-			return "퇴출등록 중 오류가 발생했습니다. 다시 시도해주세요.";
+		if (outPlayerResult < 1 || playerResult < 1) {
+			connection.rollback();
+			throw new SQLException();
 		}
+
+		connection.commit();
+		return "성공";
 	}
 
-	public String getOutPlayers() {
+	public String getOutPlayers() throws SQLException {
 		List<OutPlayerRespDto> outPlayers = outPlayerDao.selectOutPlayers();
 
 		if (outPlayers == null || outPlayers.size() == 0)
-			throw new ElementNotFoundException("등록된 퇴출선수가 없습니다.");
+			throw new ElementNotFoundException(ExceptionMessage.ERR_MSG_OUTPLAYERS_NOT_FOUND.getMessage());
 
 		return outPlayersToString(outPlayers);
 	}

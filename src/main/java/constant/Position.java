@@ -21,6 +21,6 @@ public enum Position {
 			return positon;
 		}
 
-		throw new ElementNotFoundException("포지션을 찾을 수 없습니다.");
+		throw new ElementNotFoundException(ExceptionMessage.ERR_MSG_POSITION_NOT_FOUND.getMessage());
 	}
 }

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import constant.ExceptionMessage;
 import exception.ArgumentMismatchException;
 import exception.MethodNotFoundException;
 import util.annotation.Controller;
@@ -78,11 +79,11 @@ public class ComponentScan {
 				return response;
 			}
 
-			throw new MethodNotFoundException("명령을 찾지 못했습니다.");
+			throw new MethodNotFoundException();
 		} catch (ArgumentMismatchException | MethodNotFoundException e) {
 			return e.getMessage();
 		} catch (Exception e) {
-			return "명령 실행 중 오류가 발생했습니다.";
+			return ExceptionMessage.ERR_MSG_REFLECTION.getMessage();
 		}
 	}
 
@@ -109,7 +110,7 @@ public class ComponentScan {
 
 	private Object convertParameterType(Object arg, Class<?> targetType) {
 		if (arg.toString().equals(" "))
-			throw new ArgumentMismatchException("공백을 입력할 수 없습니다.");
+			throw new ArgumentMismatchException();
 
 		if (targetType.equals(int.class) || targetType.equals(Integer.class)) {
 			return Integer.parseInt(arg.toString());
@@ -124,13 +125,13 @@ public class ComponentScan {
 
 	private Object[] convertParameterMaptoArray(Parameter[] parameters, Map<String, Object> inputParameters) {
 		if (parameters.length != inputParameters.size())
-			throw new ArgumentMismatchException("입력 값을 확인해주세요.");
+			throw new ArgumentMismatchException();
 
 		Object[] returnArray = new Object[parameters.length];
 
 		for (int i = 0; i < returnArray.length; i++) {
 			if (!inputParameters.containsKey(parameters[i].getName())) {
-				throw new ArgumentMismatchException("입력 값을 확인해주세요.");
+				throw new ArgumentMismatchException();
 			}
 
 			returnArray[i] = inputParameters.get(parameters[i].getName());
