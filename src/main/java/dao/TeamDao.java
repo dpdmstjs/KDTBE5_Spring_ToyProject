@@ -32,7 +32,7 @@ public class TeamDao {
 
 	private StadiumDao stadiumDao = new StadiumDao(DBConnection.getInstance());
 
-	public int createTeam(int stadiumId, String name) throws SQLException{
+	public int createTeam(int stadiumId, String name) throws SQLException {
 		if (!stadiumDao.isExistStadiumId(stadiumId)) {
 			throw new ElementNotFoundException(ExceptionMessage.ERR_MSG_STADIUM_NOT_FOUND.getMessage());
 		}
@@ -74,7 +74,6 @@ public class TeamDao {
 		return teams;
 	}
 
-
 	public List<String> getTeamNames() {
 		List<String> teams = new ArrayList<>();
 
@@ -93,15 +92,12 @@ public class TeamDao {
 
 	private boolean isExistTeamName(String name) {
 		String query = "SELECT name FROM team WHERE name = ?";
-		try(PreparedStatement statement = connection.prepareStatement(query)) {
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
 
 			statement.setString(1, name);
 			try (ResultSet resultSet = statement.executeQuery()) {
-				resultSet.next();
-
-				if (resultSet.getString("name").isEmpty()) {
+				if (!resultSet.next())
 					return true;
-				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

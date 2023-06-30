@@ -31,17 +31,17 @@ public class ComponentScan {
 		return componentScan;
 	}
 
-	private Set<Class> scanPackage(String pkg) throws URISyntaxException, ClassNotFoundException {
+	private Set<Class> scanPackage(String packageName) throws URISyntaxException, ClassNotFoundException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		Set<Class> classes = new HashSet<>();
 
-		URL packageUrl = classLoader.getResource(pkg);
+		URL packageUrl = classLoader.getResource(packageName);
 		File packageDirectory = new File(packageUrl.toURI());
 		for (File file : packageDirectory.listFiles()) {
 			if (!file.getName().endsWith(".class"))
 				continue;
 
-			String className = pkg + "." + file.getName().replace(".class", "");
+			String className = packageName + "." + file.getName().replace(".class", "");
 			Class cls = Class.forName(className);
 			classes.add(cls);
 		}
@@ -67,6 +67,9 @@ public class ComponentScan {
 				method.setAccessible(true);
 
 				if (method.getParameterTypes().length == 0) {
+					if (methodInfo.getParameterMap() != null)
+						throw new ArgumentMismatchException();
+					
 					String response = (String)method.invoke(instance);
 
 					return response;
