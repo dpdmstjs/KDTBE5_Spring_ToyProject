@@ -1,7 +1,11 @@
 package controller;
 
+import java.sql.SQLException;
+
 import constant.ExceptionMessage;
+import constant.Position;
 import exception.ArgumentMismatchException;
+import exception.DuplicateKeyException;
 import exception.ElementNotFoundException;
 import service.TeamService;
 import util.annotation.Controller;
@@ -20,7 +24,14 @@ public class TeamController {
 		if (stadiumId <= 0 || name.equals(null) || name.isEmpty()) {
 			throw new ArgumentMismatchException();
 		}
-		return teamService.addTeam(stadiumId, name);
+
+		try {
+			return teamService.addTeam(stadiumId, name);
+		} catch (ElementNotFoundException | DuplicateKeyException e) {
+			return e.getMessage();
+		} catch (SQLException e) {
+			return ExceptionMessage.ERR_MSG_SQL.getMessage();
+		}
 	}
 
 	@RequestMapping(name = "팀목록")

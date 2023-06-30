@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import constant.ExceptionMessage;
 import db.DBConnection;
 import dto.TeamRespDto;
 import exception.DuplicateKeyException;
@@ -31,27 +32,23 @@ public class TeamDao {
 
 	private StadiumDao stadiumDao = new StadiumDao(DBConnection.getInstance());
 
-	public int createTeam(int stadiumId, String name) {
+	public int createTeam(int stadiumId, String name) throws SQLException{
 		if (!stadiumDao.isExistStadiumId(stadiumId)) {
-			throw new ElementNotFoundException("경기장이 존재하지 않습니다.");
+			throw new ElementNotFoundException(ExceptionMessage.ERR_MSG_STADIUM_NOT_FOUND.getMessage());
 		}
 
 		if (!isExistTeamName(name)) {
-			throw new DuplicateKeyException("해당 팀이 있습니다.");
+			throw new DuplicateKeyException(ExceptionMessage.ERR_MSG_TEAM_DUPLICATED.getMessage());
 		}
 
 		String query = "INSERT INTO team(stadium_id, name, created_at) VALUES (?, ?, now())";
-		try (PreparedStatement statement = connection.prepareStatement(query)) {
-			statement.setInt(1, stadiumId);
-			statement.setString(2, name);
+		PreparedStatement statement = connection.prepareStatement(query);
+		statement.setInt(1, stadiumId);
+		statement.setString(2, name);
 
-			int rowCount = statement.executeUpdate();
+		int rowCount = statement.executeUpdate();
 
-			return rowCount;
-
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		return rowCount;
 	}
 
 	public List<TeamRespDto> selectTeams() {
