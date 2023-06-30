@@ -59,7 +59,7 @@ public class PlayerDao {
 	public List<Player> selectPlayersByTeam(int teamId) throws SQLException {
 		List<Player> players = new ArrayList<>();
 
-		String sql = "select * from player where team_id = ?";
+		String sql = "select * from player where team_id = ? order by team_id";
 		PreparedStatement statement = connection.prepareStatement(sql);
 		statement.setInt(1, teamId);
 		ResultSet resultSet = statement.executeQuery();
@@ -120,7 +120,8 @@ public class PlayerDao {
 			builder.append("FROM team t ");
 			builder.append("JOIN player p ON p.team_id = t.id ");
 			builder.append(") team_players ");
-			builder.append("GROUP BY team_players.position");
+			builder.append("GROUP BY team_players.position ");
+			builder.append("ORDER BY team_players.position ASC");
 
 			PreparedStatement statement = connection.prepareStatement(builder.toString());
 
@@ -148,22 +149,6 @@ public class PlayerDao {
 			.positions(positions)
 			.teams(teams)
 			.build();
-	}
-
-	public List<String> selectTeams() {
-		List<String> teams = new ArrayList<>();
-		try {
-			String query = "SELECT name FROM team";
-			PreparedStatement statement = connection.prepareStatement(query);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				while (resultSet.next()) {
-					teams.add(resultSet.getString("name"));
-				}
-			}
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-		return teams;
 	}
 
 	private boolean isExistTeamPosition(int teamId, Position position) throws SQLException {
