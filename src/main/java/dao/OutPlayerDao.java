@@ -43,9 +43,8 @@ public class OutPlayerDao {
 	public List<OutPlayerRespDto> selectOutPlayers() throws SQLException {
 		List<OutPlayerRespDto> outPlayers = new ArrayList<>();
 
-		String sql = "select p.id, p.name, p.position, o.reason, o.created_at" +
-			" from out_player o left outer join player p on o.player_id = p.id " +
-			"ORDER BY p.id ASC";
+		String sql = "SELECT p.id, p.name, p.position, IFNULL(o.reason, '') AS reason, o.created_at " +
+			"FROM player p LEFT OUTER JOIN out_player o ON p.id = o.player_id";
 
 		PreparedStatement statement = connection.prepareStatement(sql);
 		ResultSet resultSet = statement.executeQuery();

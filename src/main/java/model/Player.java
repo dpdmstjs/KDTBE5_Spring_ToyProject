@@ -17,7 +17,7 @@ public class Player {
 
 	@Override
 	public String toString() {
-		return name + "\t" + position.getName() + "\t" + formattedTimestamp(createdAt) + "\n";
+		return id + "\t" + name + "\t" + position.getName() + "\t" + formattedTimestamp(createdAt) + "\n";
 	}
 
 	private String formattedTimestamp(Timestamp timestamp) {
